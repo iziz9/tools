@@ -4,10 +4,10 @@ import Link from 'next/link';
 
 export default function Header() {
   return (
-    <header className="h-20 border-b border-stone-200">
+    <header className="border-b border-stone-200">
       <div className="w-full h-full lg:max-w-5xl p-4 m-auto flex gap-16 items-center">
         <Link href={PATH.HOME}>
-          <Image src="/logo.svg" alt="logo" width={50} height={50} />
+          <Image src="/logo.svg" alt="logo" width={40} height={40} priority />
         </Link>
         <nav className="flex w-full justify-between text-lg">
           <div className="flex gap-10">
