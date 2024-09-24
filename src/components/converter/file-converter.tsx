@@ -1,9 +1,9 @@
 'use client'
 import { imgFormat } from '@/constants/names'
 import { formatFileSize, removeFormat } from '@/lib/file-utils'
-import { ChangeEvent, useRef, useState } from 'react'
+import { ChangeEvent, MouseEvent, useRef, useState } from 'react'
 
-export default function FileUpload() {
+export default function FileConverter() {
   const [file, setFile] = useState<File | null>(null)
   const [selectedFormat, setSelectedFormat] = useState<string>('...')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -28,15 +28,16 @@ export default function FileUpload() {
     }
   }
 
-  const convertAction = async () => {
+  const convertImage = (e: MouseEvent<HTMLButtonElement>) => {
     if (!file) return
-    if (selectedFormat === '...') return alert('파일 형식을 선택해주세요.')
-    convertImage(file)
-  }
+    if (selectedFormat === '...') {
+      e.preventDefault()
+      return alert('파일 형식을 선택해주세요.')
+    }
 
-  const convertImage = (file: Blob) => {
     const img = new Image() // 동적으로 이미지 생성
-    img.src = URL.createObjectURL(file) // 업로드한 파일에서 생성한 url을 img.src로 지정
+    const imgUrl = URL.createObjectURL(file) // 업로드한 파일에서 생성한 url을 img.src로 지정
+    img.src = imgUrl
 
     const canvas = canvasRef.current
     if (!canvas) return new Error('canvas를 사용할 수 없습니다.')
@@ -48,8 +49,17 @@ export default function FileUpload() {
       const ctx = canvas.getContext('2d') // 2d 드로잉 영역에 접근
       ctx?.drawImage(img, 0, 0) // 업로드한 이미지를 캔버스에 그리기(이미지객체, x좌표, y좌표)
 
-      if (!downloadRef.current) return new Error('이미지 변환에 실패했습니다.')
-      return (downloadRef.current.href = canvas.toDataURL(`image/${selectedFormat}`))
+      if (downloadRef.current) {
+        downloadRef.current.download = `${removeFormat(file.name)}.${selectedFormat}` // 다운로드 시 파일이름 설정
+        downloadRef.current.href = canvas.toDataURL(`image/${selectedFormat}`) // 다운로드 링크 설정
+        downloadRef.current.click() //다운로드 링크 클릭이벤트 발생
+        // return new Error('에러 테스트')
+        return URL.revokeObjectURL(imgUrl) // 캐싱된 이미지 URL 해제(메모리관리, 같은 url 중복 생성 및 다운로드 중복 방지)
+      }
+    }
+    img.onerror = () => {
+      new Error('이미지를 로드하는 데 실패했습니다.')
+      URL.revokeObjectURL(imgUrl)
     }
   }
 
@@ -84,7 +94,7 @@ export default function FileUpload() {
               className="border border-gray-200 p-2 text-center"
               onChange={e => setSelectedFormat(e.target.value)}
             >
-              <option value={'...'}>...</option>
+              {selectedFormat === '...' && <option value={'...'}>...</option>}
               {imgFormat.map(format => (
                 <option key={format} value={format}>
                   {format}
@@ -92,16 +102,13 @@ export default function FileUpload() {
               ))}
             </select>
             <span>형식으로</span>
-            <a
-              role="button"
-              href=""
-              ref={downloadRef}
-              download={`${removeFormat(file.name)}.${selectedFormat}`}
-              onClick={convertAction}
+            <button
+              onClick={e => convertImage(e)}
               className="p-3 bg-gray-200 rounded-lg hover:border-gray-400 hover:border hover:bg-white"
             >
               다운로드
-            </a>
+            </button>
+            <a href="" ref={downloadRef} className="hidden"></a>
           </div>
         </div>
       )}
