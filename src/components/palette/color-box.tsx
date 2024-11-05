@@ -1,15 +1,29 @@
+'use client'
+import { useState } from 'react'
+import ColorOverlay from './color-overlay'
+
 type ColorBoxProps = {
   hexCode: string
 }
 
 export default function ColorBox({ hexCode }: ColorBoxProps) {
+  const [overlay, setOverlay] = useState(false)
+
   return (
     <section
-      className={`w-full h-96 flex flex-col justify-end items-center pb-14`}
+      className={`w-full h-[32rem] flex flex-col justify-end items-center py-16`}
       style={{ backgroundColor: hexCode }}
+      onMouseOver={() => setOverlay(true)}
+      onMouseLeave={() => setOverlay(false)}
     >
-      <p className="font-bold [text-shadow:_3px_1px_10px_rgb(255_255_255_/_100%)]">{hexCode}</p>
-      <p>ColorName</p>
+      {overlay && <ColorOverlay hexCode={hexCode} />}
+
+      <div className="flex flex-col gap-5 items-center">
+        <p className="font-bold text-2xl [text-shadow:_3px_1px_10px_rgb(255_255_255_/_100%)]">
+          {hexCode.toUpperCase()}
+        </p>
+        <p className="text-sm">ColorName</p>
+      </div>
     </section>
   )
 }

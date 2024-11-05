@@ -4,9 +4,9 @@ import Header from '@/components/header'
 export const metadata: Metadata = {
   title: {
     template: '%s | Tools',
-    default: 'Tools for Frontend Developers',
+    default: 'Tools',
   },
-  description: '프론트엔드 개발자를 위한 이미지 툴',
+  description: '이미지 툴',
   icons: {
     icon: '/favicon.ico',
   },

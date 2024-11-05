@@ -7,7 +7,7 @@ export default function Header() {
     <header className="border-b border-stone-200">
       <div className="w-full h-full lg:max-w-5xl p-4 m-auto flex gap-16 items-center">
         <Link href={PATH.HOME}>
-          <Image src="/logo.svg" alt="logo" width={40} height={40} priority />
+          <Image src="/logo.webp" alt="logo" width={120} height={48} priority />
         </Link>
         <nav className="flex w-full justify-between">
           <div className="flex gap-10">

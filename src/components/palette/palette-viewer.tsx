@@ -1,4 +1,4 @@
-import ColorBox from './color-box'
+import ColorBox from '@/components/palette/color-box'
 
 export default function PaletteViewer() {
   const hexArray: string[] = []
