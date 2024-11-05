@@ -64,7 +64,7 @@ export default function FileConverter() {
   }
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-8">
       <label
         htmlFor="file"
         onClick={openFileSelectWindow}
@@ -81,7 +81,7 @@ export default function FileConverter() {
         onChange={fileChangeAction}
       />
       {file && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-8">
           <div className="flex justify-between border-2 p-4">
             <span>{file.name}</span>
             <span>{formatFileSize(file.size)}</span>
@@ -89,7 +89,7 @@ export default function FileConverter() {
               X
             </button>
           </div>
-          <div className="flex gap-3 justify-center items-center">
+          <div className="flex h-10 gap-3 justify-center items-center">
             <select
               className="border border-gray-200 p-2 text-center"
               onChange={e => setSelectedFormat(e.target.value)}
@@ -104,9 +104,9 @@ export default function FileConverter() {
             <span>형식으로</span>
             <button
               onClick={e => convertImage(e)}
-              className="p-3 bg-gray-200 rounded-lg hover:border-gray-400 hover:border hover:bg-white"
+              className="w-24 h-10 bg-gray-200 rounded-lg box-border hover:border-gray-400 hover:border hover:bg-white"
             >
-              다운로드
+              변환하기
             </button>
             <a href="" ref={downloadRef} className="hidden"></a>
           </div>

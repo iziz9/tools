@@ -1,7 +1,9 @@
-export default function Mypage() {
+export default function MyPage() {
   return (
     <main>
-      <div>MYPAGE</div>
+      <div>
+        <div>MyPage</div>
+      </div>
     </main>
-  );
+  )
 }
