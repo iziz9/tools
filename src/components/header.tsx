@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className="border-b border-stone-200">
+    <header className="border-b border-stone-200 min-w-[750px]">
       <div className="w-full h-full lg:max-w-5xl p-4 m-auto flex gap-16 items-center">
         <Link href={PATH.HOME}>
           <Image src="/logo.webp" alt="logo" width={120} height={48} priority />

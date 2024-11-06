@@ -2,11 +2,11 @@
 import ColorBox from '@/components/palette/color-box'
 import useColors from '@/hooks/useColors'
 import { CopyIcon, HeartIcon, PlusIcon, RefreshIcon } from '@/icons/icons'
-import { copyToClipboard } from '@/lib/palette-utils'
 import { useEffect } from 'react'
+import { copyToClipboard } from '@/lib/palette-utils'
 
 export default function PalettePage() {
-  const { hexArray, refreshColors, plusPalette, deleteColor, paletteCount } = useColors()
+  const { refreshColors, plusPalette, deleteColor, paletteCount, hexArray } = useColors()
 
   useEffect(() => {
     refreshColors()
