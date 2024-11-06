@@ -68,7 +68,7 @@ export default function FileConverter() {
       <label
         htmlFor="file"
         onClick={openFileSelectWindow}
-        className="w-40 h-10 leading-10 bg-red-400 m-auto text-lg text-center cursor-pointer"
+        className="w-40 h-10 leading-10 bg-tools text-white m-auto text-lg text-center cursor-pointer"
       >
         파일 선택
       </label>

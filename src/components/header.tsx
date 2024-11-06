@@ -11,9 +11,9 @@ export default function Header() {
         </Link>
         <nav className="flex w-full justify-between">
           <div className="flex gap-10">
+            <Link href={PATH.PALETTE}>{PATH_NAMES[PATH.PALETTE]}</Link>
             <Link href={PATH.CONVERTER}>{PATH_NAMES[PATH.CONVERTER]}</Link>
             <Link href={PATH.EDITOR}>{PATH_NAMES[PATH.EDITOR]}</Link>
-            <Link href={PATH.PALETTE}>{PATH_NAMES[PATH.PALETTE]}</Link>
           </div>
           <Link href={PATH.MYPAGE}>{PATH_NAMES[PATH.MYPAGE]}</Link>
         </nav>

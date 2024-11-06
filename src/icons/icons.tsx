@@ -3,7 +3,7 @@ export const CopyIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      strokeWidth="0.5"
+      strokeWidth="0.3"
       viewBox="0 0 24 24"
       height="24px"
       width="24px"
@@ -20,7 +20,7 @@ export const HeartIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      strokeWidth="0.5"
+      strokeWidth="0.3"
       viewBox="0 0 24 24"
       height="24px"
       width="24px"
@@ -36,7 +36,7 @@ export const ShadeIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      strokeWidth="0.5"
+      strokeWidth="0.3"
       viewBox="0 0 24 24"
       height="24px"
       width="24px"
@@ -52,7 +52,7 @@ export const RefreshIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      strokeWidth="0.5"
+      strokeWidth="0.3"
       viewBox="0 0 24 24"
       height="24px"
       width="24px"
@@ -68,7 +68,7 @@ export const PlusIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      strokeWidth="0.5"
+      strokeWidth="0.3"
       viewBox="0 0 24 24"
       height="24px"
       width="24px"
@@ -84,7 +84,7 @@ export const CloseIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      strokeWidth="0.5"
+      strokeWidth="0.3"
       viewBox="0 0 24 24"
       height="24px"
       width="24px"
@@ -100,7 +100,7 @@ export const DeleteIcon = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      strokeWidth="0.5"
+      strokeWidth="0.3"
       viewBox="0 0 24 24"
       height="24px"
       width="24px"

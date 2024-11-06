@@ -1,7 +1,7 @@
 export default function Home() {
   return (
-    <main className="">
-      <h1>메인페이지</h1>
+    <main className="pt-12">
+      <h1>준비중입니다.</h1>
     </main>
-  );
+  )
 }
