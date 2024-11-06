@@ -54,7 +54,8 @@ header {
 } */
 
 a:hover {
-  font-weight: 700;
+  color: #00629a;
+  font-weight: 600;
 }
 
 .tooltip {

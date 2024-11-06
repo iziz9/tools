@@ -62,3 +62,51 @@ export const RefreshIcon = () => {
     </svg>
   )
 }
+
+export const PlusIcon = () => {
+  return (
+    <svg
+      stroke="currentColor"
+      fill="currentColor"
+      strokeWidth="0.5"
+      viewBox="0 0 24 24"
+      height="24px"
+      width="24px"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M11.75 4.5a.75.75 0 0 1 .75.75V11h5.75a.75.75 0 0 1 0 1.5H12.5v5.75a.75.75 0 0 1-1.5 0V12.5H5.25a.75.75 0 0 1 0-1.5H11V5.25a.75.75 0 0 1 .75-.75Z"></path>
+    </svg>
+  )
+}
+
+export const CloseIcon = () => {
+  return (
+    <svg
+      stroke="currentColor"
+      fill="currentColor"
+      strokeWidth="0.5"
+      viewBox="0 0 24 24"
+      height="24px"
+      width="24px"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M5.72 5.72a.75.75 0 0 1 1.06 0L12 10.94l5.22-5.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L13.06 12l5.22 5.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L12 13.06l-5.22 5.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.94 12 5.72 6.78a.75.75 0 0 1 0-1.06Z"></path>
+    </svg>
+  )
+}
+
+export const DeleteIcon = () => {
+  return (
+    <svg
+      stroke="currentColor"
+      fill="currentColor"
+      strokeWidth="0.5"
+      viewBox="0 0 24 24"
+      height="24px"
+      width="24px"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M2 12.75a.75.75 0 0 1 .75-.75h18.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z"></path>
+    </svg>
+  )
+}
