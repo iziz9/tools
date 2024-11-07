@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import '@/styles/globals.css'
 import Header from '@/components/header'
+
 export const metadata: Metadata = {
   title: {
     template: '%s | Tools',

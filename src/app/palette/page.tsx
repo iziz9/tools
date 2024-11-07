@@ -4,6 +4,8 @@ import useColors from '@/hooks/useColors'
 import { CopyIcon, HeartIcon, PlusIcon, RefreshIcon } from '@/icons/icons'
 import { useEffect } from 'react'
 import { copyToClipboard } from '@/lib/palette-utils'
+import { ModalProvider } from '@/context/modal-context'
+import Modal from '@/components/common/modal'
 
 export default function PalettePage() {
   const { refreshColors, plusPalette, deleteColor, paletteCount, hexArray } = useColors()
@@ -45,21 +47,24 @@ export default function PalettePage() {
   ]
 
   return (
-    <main>
-      <div className="h-12 flex justify-end items-center gap-5">
-        {menuButtons.map(button => {
-          return button.key === 'plus' && paletteCount === 8 ? null : (
-            <button key={button.key} className="tooltip" data-tooltip={button.tooltip} onClick={button.onclick}>
-              {button.icon}
-            </button>
-          )
-        })}
-      </div>
-      <div className="flex w-full justify-between">
-        {hexArray.map(hex => (
-          <ColorBox key={hex} hexCode={hex} deleteColor={deleteColor} />
-        ))}
-      </div>
-    </main>
+    <ModalProvider>
+      <Modal />
+      <main>
+        <div className="h-12 flex justify-end items-center gap-5">
+          {menuButtons.map(button => {
+            return button.key === 'plus' && paletteCount === 6 ? null : (
+              <button key={button.key} className="tooltip" data-tooltip={button.tooltip} onClick={button.onclick}>
+                {button.icon}
+              </button>
+            )
+          })}
+        </div>
+        <div className="flex w-full justify-between">
+          {hexArray.map(hex => (
+            <ColorBox key={hex} hexCode={hex} deleteColor={deleteColor} />
+          ))}
+        </div>
+      </main>
+    </ModalProvider>
   )
 }

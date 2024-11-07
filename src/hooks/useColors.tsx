@@ -1,11 +1,9 @@
-import { IColorInfo } from '@/constants/types'
 import { generateHexCode } from '@/lib/palette-utils'
-import { getColorInfo } from '@/services/requests'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const useColors = () => {
   const [hexArray, setHexArray] = useState<string[]>([])
-  const [paletteCount, setPaletteCount] = useState<number>(5)
+  const [paletteCount, setPaletteCount] = useState<number>(3)
 
   const generateColors = () => {
     for (let i = 0; i < paletteCount; i += 1) {
@@ -20,7 +18,7 @@ const useColors = () => {
   }
 
   const plusPalette = () => {
-    if (paletteCount === 8) return
+    if (paletteCount === 6) return
     setPaletteCount(prev => prev + 1)
     const hexCode = generateHexCode()
     setHexArray(prev => [...prev, `#${hexCode}`])

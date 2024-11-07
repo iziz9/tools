@@ -23,7 +23,7 @@ export const getColorInfo = async (hexCode: string) => {
 
 export const getColorSchemes = async (hexCode: string) => {
   const cleanHex = hexCode.replace('#', '')
-  const query = `/scheme?hex=${cleanHex}`
+  const query = `/scheme?hex=${cleanHex}&mode=monochrome&count=10`
 
   try {
     const res = await fetch(BASE_URL + query, {
