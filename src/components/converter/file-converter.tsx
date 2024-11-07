@@ -1,11 +1,12 @@
 'use client'
 import { imgFormat } from '@/constants/names'
-import { formatFileSize, removeFormat } from '@/lib/file-utils'
+import { formatFileSize, imgUrlToBlob, removeFormat } from '@/lib/file-utils'
 import { ChangeEvent, MouseEvent, useRef, useState } from 'react'
 
 export default function FileConverter() {
   const [file, setFile] = useState<File | null>(null)
   const [selectedFormat, setSelectedFormat] = useState<string>('...')
+  const [convertedFileSize, setConvertedFileSize] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
@@ -19,12 +20,14 @@ export default function FileConverter() {
 
     const file = e.target.files[0]
     setFile(file)
+    setConvertedFileSize('')
   }
 
   const deleteFile = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
       setFile(null)
+      setConvertedFileSize('')
     }
   }
 
@@ -49,11 +52,16 @@ export default function FileConverter() {
       const ctx = canvas.getContext('2d') // 2d 드로잉 영역에 접근
       ctx?.drawImage(img, 0, 0) // 업로드한 이미지를 캔버스에 그리기(이미지객체, x좌표, y좌표)
 
+      const dataURL = canvas.toDataURL(`image/${selectedFormat}`)
+
       if (downloadRef.current) {
         downloadRef.current.download = `${removeFormat(file.name)}.${selectedFormat}` // 다운로드 시 파일이름 설정
-        downloadRef.current.href = canvas.toDataURL(`image/${selectedFormat}`) // 다운로드 링크 설정
+        downloadRef.current.href = dataURL // 다운로드 링크 설정
         downloadRef.current.click() //다운로드 링크 클릭이벤트 발생
-        // return new Error('에러 테스트')
+
+        const convertedFile = imgUrlToBlob(dataURL) // 변환된 파일 사이즈 체크
+        setConvertedFileSize(formatFileSize(convertedFile.size))
+
         return URL.revokeObjectURL(imgUrl) // 캐싱된 이미지 URL 해제(메모리관리, 같은 url 중복 생성 및 다운로드 중복 방지)
       }
     }
@@ -64,7 +72,7 @@ export default function FileConverter() {
   }
 
   return (
-    <div className="w-full flex flex-col gap-8">
+    <div className="w-full flex flex-col gap-12">
       <label
         htmlFor="file"
         onClick={openFileSelectWindow}
@@ -81,7 +89,7 @@ export default function FileConverter() {
         onChange={fileChangeAction}
       />
       {file && (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-12">
           <div className="flex justify-between border-2 p-4">
             <span>{file.name}</span>
             <span>{formatFileSize(file.size)}</span>
@@ -110,6 +118,15 @@ export default function FileConverter() {
             </button>
             <a href="" ref={downloadRef} className="hidden"></a>
           </div>
+
+          {convertedFileSize && (
+            <div className="text-center">
+              파일 사이즈가
+              <span className="text-red-400 font-semibold"> {formatFileSize(file.size)} </span>
+              에서
+              <span className="text-red-400 font-semibold"> {convertedFileSize} </span>로 변경되었습니다.
+            </div>
+          )}
         </div>
       )}
       <canvas ref={canvasRef} className="hidden"></canvas>
