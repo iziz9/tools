@@ -1,19 +1,20 @@
+'use client'
 import { IColorSchemes } from '@/constants/types'
 import { useModalContext } from '@/context/modal-context'
 import { copyToClipboard } from '@/lib/palette-utils'
 import { getColorSchemes } from '@/services/requests'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function ShadeModal({ hexCode, textColor }: { hexCode: string; textColor: string }) {
   const { modal } = useModalContext()
   const [schemes, setSchemes] = useState<IColorSchemes>()
-  const isInitialRender = useRef(true)
+  // const isInitialRender = useRef(true)
 
   useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false
-      return
-    }
+    // if (isInitialRender.current) {
+    //   isInitialRender.current = false
+    //   return
+    // }
 
     const requestGetColorSchemes = async () => {
       const res = await getColorSchemes(hexCode)

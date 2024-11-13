@@ -1,7 +1,7 @@
+'use client'
 import { useModalContext } from '@/context/modal-context'
 import { CopyIcon, HeartIcon, DeleteIcon, ShadeIcon } from '@/icons/icons'
 import { copyToClipboard } from '@/lib/palette-utils'
-import Modal from '../common/modal'
 import ShadeModal from './shade-modal'
 
 type ColorOverlayProps = {
@@ -11,7 +11,7 @@ type ColorOverlayProps = {
 }
 
 export default function ColorOverlay({ hexCode, textColor, deleteColor }: ColorOverlayProps) {
-  const { modal, openModal } = useModalContext()
+  const { openModal } = useModalContext()
 
   const openShadeModal = (hexCode: string) => {
     openModal({

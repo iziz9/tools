@@ -1,11 +1,10 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ColorOverlay from './color-overlay'
 import { IColorInfo } from '@/constants/types'
 import { getColorInfo } from '@/services/requests'
 
 type ColorBoxProps = {
-  // colorInfo: IColorInfo
   hexCode: string
   deleteColor: (hexCode: string) => void
 }
@@ -13,13 +12,13 @@ type ColorBoxProps = {
 export default function ColorBox({ hexCode, deleteColor }: ColorBoxProps) {
   const [overlay, setOverlay] = useState(false)
   const [colorInfo, setColorInfo] = useState<IColorInfo>()
-  const isInitialRender = useRef(true)
+  // const isInitialRender = useRef(true)
 
   useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false
-      return
-    }
+    // if (isInitialRender.current) {
+    //   isInitialRender.current = false
+    //   return
+    // }
 
     const requestGetColorInfo = async () => {
       const info = await getColorInfo(hexCode)

@@ -10,7 +10,7 @@ export default function Home() {
   const mouseMove = (e: MouseEvent) => {
     if (!frameRef.current || !cardRef.current || !lightRef.current) return
 
-    let { x, y, width, height } = frameRef.current?.getBoundingClientRect()
+    const { x, y, width, height } = frameRef.current?.getBoundingClientRect()
     const left = e.clientX - x
     const top = e.clientY - y
     const centerX = left - width / 2
