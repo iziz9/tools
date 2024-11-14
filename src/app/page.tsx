@@ -19,7 +19,7 @@ export default function Home() {
 
     cardRef.current.style.transform = `rotate3D(${-centerY / 100}, ${centerX / 100}, 0, ${d / 10}deg)`
     cardRef.current.style.boxShadow = `${-centerX / 10}px ${centerY / 10}px 10px rgba(0,0,0,0.2)`
-    lightRef.current.style.backgroundImage = `radial-gradient(cirle at ${left}px ${top}px, #000000, #ffffff00, #ffffff70)`
+    lightRef.current.style.backgroundImage = `radial-gradient(circle at ${left}px ${top}px, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0), rgba(255, 255, 255, 0.2))`
   }
 
   const addMouseMoveEvent = () => {
