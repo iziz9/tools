@@ -12,6 +12,7 @@ export default function PalettePage() {
 
   useEffect(() => {
     refreshColors()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const copyAllHexCodes = () => {
