@@ -12,14 +12,8 @@ type ColorBoxProps = {
 export default function ColorBox({ hexCode, deleteColor }: ColorBoxProps) {
   const [overlay, setOverlay] = useState(false)
   const [colorInfo, setColorInfo] = useState<IColorInfo>()
-  // const isInitialRender = useRef(true)
 
   useEffect(() => {
-    // if (isInitialRender.current) {
-    //   isInitialRender.current = false
-    //   return
-    // }
-
     const requestGetColorInfo = async () => {
       const info = await getColorInfo(hexCode)
       console.log(info)

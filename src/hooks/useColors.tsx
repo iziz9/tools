@@ -17,10 +17,11 @@ const useColors = () => {
     generateColors()
   }
 
-  const plusPalette = () => {
+  const plusPalette = (specificColor?: string) => {
     if (paletteCount === 6) return
     setPaletteCount(prev => prev + 1)
-    const hexCode = generateHexCode()
+
+    const hexCode = specificColor || generateHexCode()
     setHexArray(prev => [...prev, `#${hexCode}`])
   }
 
