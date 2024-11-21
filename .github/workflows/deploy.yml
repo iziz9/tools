@@ -28,8 +28,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: deploy to ec2
-        run: cd /tools
-          git pull origin main
-          npm install
-          npm run build
+        run: |
+          cd /tools |
+          git pull origin main |
+          npm install |
+          npm run build |
           pm2 restart all
