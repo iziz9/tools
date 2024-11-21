@@ -1,0 +1,36 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: next.js build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout source code.
+        uses: actions/checkout@v3
+      - name: Check Node v
+        run: node -v
+      - name: Install Dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy
+        run: aws deploy create-deployment
+          --application-name tools-codeDeploy
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name tools-codeDeploy-group
+  deploy:
+    name: next.js deploy
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: deploy to ec2
+        run: pm2 reload all
