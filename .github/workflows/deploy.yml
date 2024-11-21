@@ -23,14 +23,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
   deploy:
-    name: Deploy to ec2
+    name: Deploy to EC2
     needs: build
     runs-on: ubuntu-20.04
     steps:
-      - name: deploy to ec2
-        run: |
-          cd tools |
-          git pull origin main |
-          npm install |
-          npm run build |
-          pm2 restart all
+      - name: executing remote ssh commands
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST_DOMAIN }}
+          username: ${{secrets.EC2_USERNAME}}
+          key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          script: |
+            cd tools
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart all
