@@ -32,7 +32,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST_DOMAIN }}
           username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_SSH_PASSWORD }}
+          key: ${{ secrets.EC2_SSH_PASSWORD }}
           script: |
             cd tools
             git pull origin main
