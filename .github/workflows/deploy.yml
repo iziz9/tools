@@ -22,15 +22,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Deploy
-        run: aws deploy create-deployment
-          --application-name tools-codeDeploy
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name tools-codeDeploy-group
   deploy:
-    name: next.js deploy
+    name: Deploy to ec2
     needs: build
     runs-on: ubuntu-20.04
     steps:
       - name: deploy to ec2
-        run: pm2 reload all
+        run: cd /tools
+          git pull origin main
+          npm install
+          npm run build
+          pm2 restart all
