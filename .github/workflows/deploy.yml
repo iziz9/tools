@@ -34,7 +34,10 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_PASSWORD }}
           script: |
-            cd tools
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            npm --help
+            cd /home/ubuntu/tools
             git pull origin main
             npm install
             npm run build
