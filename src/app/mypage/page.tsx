@@ -1,9 +1,9 @@
 export default function MyPage() {
   return (
     <main className="pt-12">
-      <div>
-        <div>준비중입니다.</div>
-      </div>
+      <section>
+        <span>저장된 색상</span>
+      </section>
     </main>
   )
 }

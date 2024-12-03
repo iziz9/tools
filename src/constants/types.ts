@@ -110,18 +110,11 @@ export interface IColorSchemes {
   image: IImage
   seed: IColorInfo
   _links: ILinks & ISchemes
-  // {
-  //   self: string //'/scheme?hex=0047AB&mode=monochrome&count=2'
-  //   schemes: {
-  //     monochrome: string //'/scheme?hex=0047AB&mode=monochrome&count=2'
-  //     'monochrome-dark': string //'/scheme?hex=0047AB&mode=monochrome-dark&count=2'
-  //     'monochrome-light': string //'/scheme?hex=0047AB&mode=monochrome-light&count=2'
-  //     analogic: string //'/scheme?hex=0047AB&mode=analogic&count=2'
-  //     complement: string //'/scheme?hex=0047AB&mode=complement&count=2'
-  //     'analogic-complement': string //'/scheme?hex=0047AB&mode=analogic-complement&count=2'
-  //     triad: string //'/scheme?hex=0047AB&mode=triad&count=2'
-  //     quad: string //'/scheme?hex=0047AB&mode=quad&count=2'
-  //   }
-  // }
   _embedded: object //{}
+}
+
+export interface ISavedColors {
+  hexCode: string
+  colorName: string
+  textColor: string // #fffff or #00000
 }

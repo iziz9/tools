@@ -3,14 +3,17 @@ import { useModalContext } from '@/context/modal-context'
 import { CopyIcon, HeartIcon, DeleteIcon, ShadeIcon } from '@/icons/icons'
 import { copyToClipboard } from '@/lib/palette-utils'
 import ShadeModal from './shade-modal'
+import { saveColor } from '@/lib/save-utils'
+import { IColorInfo } from '@/constants/types'
 
 type ColorOverlayProps = {
   hexCode: string
   textColor: string
   deleteColor: (hexCode: string) => void
+  colorInfo: IColorInfo | undefined
 }
 
-export default function ColorOverlay({ hexCode, textColor, deleteColor }: ColorOverlayProps) {
+export default function ColorOverlay({ hexCode, textColor, deleteColor, colorInfo }: ColorOverlayProps) {
   const { openModal } = useModalContext()
 
   const openShadeModal = (hexCode: string) => {
@@ -28,7 +31,11 @@ export default function ColorOverlay({ hexCode, textColor, deleteColor }: ColorO
       onClick: (hexCode: string) => openShadeModal(hexCode),
     },
     { icon: <CopyIcon />, key: 'copy', onClick: (hexCode: string) => copyToClipboard(hexCode) },
-    { icon: <HeartIcon />, key: 'heart', onClick: (hexCode: string) => console.log(hexCode + ' 마이페이지로..') },
+    {
+      icon: <HeartIcon />,
+      key: 'heart',
+      onClick: (hexCode: string) => saveColor({ hexCode, textColor, colorName: colorInfo?.name.value || '?' }),
+    },
   ]
 
   return (

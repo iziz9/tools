@@ -31,7 +31,9 @@ export default function ColorBox({ hexCode, deleteColor }: ColorBoxProps) {
       onMouseOver={() => setOverlay(true)}
       onMouseLeave={() => setOverlay(false)}
     >
-      {overlay && <ColorOverlay hexCode={hexCode} textColor={textColor} deleteColor={deleteColor} />}
+      {overlay && (
+        <ColorOverlay hexCode={hexCode} colorInfo={colorInfo} textColor={textColor} deleteColor={deleteColor} />
+      )}
 
       <div className="flex flex-col gap-5 items-center">
         <p className="font-bold text-2xl" style={{ color: textColor }}>
