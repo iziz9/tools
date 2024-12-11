@@ -1,22 +1,39 @@
 'use client'
 import { useModalContext } from '@/context/modal-context'
-import { CopyIcon, HeartIcon, DeleteIcon, ShadeIcon } from '@/icons/icons'
+import { CopyIcon, HeartIcon, DeleteIcon, ShadeIcon, FilledHeartIcon } from '@/icons/icons'
 import { copyToClipboard } from '@/lib/palette-utils'
-import ShadeModal from './shade-modal'
-import { saveColor } from '@/lib/save-utils'
+import ShadeModal from '@/components/palette/shade-modal'
+import { checkSavedSameColor, deleteSavedColor, saveColor } from '@/lib/save-utils'
 import { IColorInfo } from '@/constants/types'
+import { use, useEffect, useLayoutEffect, useState } from 'react'
 
 type ColorOverlayProps = {
   hexCode: string
   textColor: string
-  deleteColor: (hexCode: string) => void
+  deleteColor?: (hexCode: string) => void
   colorInfo: IColorInfo | undefined
 }
 
 export default function ColorOverlay({ hexCode, textColor, deleteColor, colorInfo }: ColorOverlayProps) {
   const { openModal } = useModalContext()
+  const [isSaved, setIsSaved] = useState<boolean>(false)
 
-  const openShadeModal = (hexCode: string) => {
+  useEffect(() => {
+    const isColorSaved = checkSavedSameColor(hexCode)
+    setIsSaved(isColorSaved)
+  }, [])
+
+  const saveMyColor = () => {
+    saveColor({ hexCode, textColor, colorName: colorInfo?.name.value || '?' })
+    setIsSaved(true)
+  }
+
+  const removeMyColor = () => {
+    deleteSavedColor(hexCode)
+    setIsSaved(false)
+  }
+
+  const openShadeModal = () => {
     openModal({
       title: 'Color Shades',
       content: <ShadeModal hexCode={hexCode} textColor={textColor} />,
@@ -24,19 +41,22 @@ export default function ColorOverlay({ hexCode, textColor, deleteColor, colorInf
   }
 
   const colorBoxIcons = [
-    { icon: <DeleteIcon />, key: 'delete', onClick: (hexCode: string) => deleteColor(hexCode) },
+    { icon: <DeleteIcon />, key: 'delete', onClick: (hexCode: string) => deleteColor && deleteColor(hexCode) },
     {
       icon: <ShadeIcon />,
       key: 'shade',
-      onClick: (hexCode: string) => openShadeModal(hexCode),
+      onClick: openShadeModal,
     },
     { icon: <CopyIcon />, key: 'copy', onClick: (hexCode: string) => copyToClipboard(hexCode) },
     {
-      icon: <HeartIcon />,
+      icon: isSaved ? <FilledHeartIcon /> : <HeartIcon />,
       key: 'heart',
-      onClick: (hexCode: string) => saveColor({ hexCode, textColor, colorName: colorInfo?.name.value || '?' }),
+      onClick: isSaved ? removeMyColor : saveMyColor,
     },
-  ]
+  ].filter(item => {
+    if (!deleteColor) return item.key !== 'delete'
+    else return true
+  })
 
   return (
     <div style={{ color: textColor }} className="w-full h-full flex flex-col justify-center gap-3 items-center">

@@ -4,7 +4,6 @@ import useColors from '@/hooks/useColors'
 import { CheckIcon, CopyIcon, HeartIcon, PlusIcon, RefreshIcon } from '@/icons/icons'
 import { KeyboardEvent, useEffect, useRef } from 'react'
 import { copyToClipboard } from '@/lib/palette-utils'
-import { ModalProvider } from '@/context/modal-context'
 import Modal from '@/components/common/modal'
 
 export default function PalettePage() {
@@ -87,42 +86,35 @@ export default function PalettePage() {
   }
 
   return (
-    <ModalProvider>
+    <main>
       <Modal />
-      <main>
-        <div className="h-12 flex justify-end items-center gap-5">
-          <div className="tooltip" data-tooltip={'색상코드로 팔레트 추가'}>
-            <input
-              type="text"
-              placeholder="#FFFFFF"
-              maxLength={7}
-              className="w-40 h-9 leading-9 border-2 border-black rounded-sm px-3 py-1 text-sm placeholder:text-sm focus:outline-none"
-              ref={inputRef}
-              onKeyDown={handleKeyDown}
-            />
-            <div className="absolute top-1.5 right-2" onClick={addSpecificColor}>
-              <CheckIcon />
-            </div>
+      <div className="h-12 flex justify-end items-center gap-5">
+        <div className="tooltip" data-tooltip={'색상코드로 팔레트 추가'}>
+          <input
+            type="text"
+            placeholder="#FFFFFF"
+            maxLength={7}
+            className="w-40 h-9 leading-9 border-2 border-black rounded-sm px-3 py-1 text-sm placeholder:text-sm focus:outline-none"
+            ref={inputRef}
+            onKeyDown={handleKeyDown}
+          />
+          <div className="absolute top-1.5 right-2" onClick={addSpecificColor}>
+            <CheckIcon />
           </div>
-          {menuButtons.map(button => {
-            return button.key === 'plus' && paletteCount === 6 ? null : (
-              <button
-                key={button.key}
-                className="tooltip"
-                data-tooltip={button.tooltip}
-                onClick={() => button.onclick()}
-              >
-                {button.icon}
-              </button>
-            )
-          })}
         </div>
-        <div className="flex w-full justify-between">
-          {hexArray.map(hex => (
-            <ColorBox key={hex} hexCode={hex} deleteColor={deleteColor} />
-          ))}
-        </div>
-      </main>
-    </ModalProvider>
+        {menuButtons.map(button => {
+          return button.key === 'plus' && paletteCount === 6 ? null : (
+            <button key={button.key} className="tooltip" data-tooltip={button.tooltip} onClick={() => button.onclick()}>
+              {button.icon}
+            </button>
+          )
+        })}
+      </div>
+      <div className="flex w-full h-[32rem]">
+        {hexArray.map(hex => (
+          <ColorBox key={hex} hexCode={hex} deleteColor={deleteColor} />
+        ))}
+      </div>
+    </main>
   )
 }

@@ -6,7 +6,7 @@ import { getColorInfo } from '@/services/requests'
 
 type ColorBoxProps = {
   hexCode: string
-  deleteColor: (hexCode: string) => void
+  deleteColor?: (hexCode: string) => void
 }
 
 export default function ColorBox({ hexCode, deleteColor }: ColorBoxProps) {
@@ -16,17 +16,16 @@ export default function ColorBox({ hexCode, deleteColor }: ColorBoxProps) {
   useEffect(() => {
     const requestGetColorInfo = async () => {
       const info = await getColorInfo(hexCode)
-      console.log(info)
       setColorInfo(info)
     }
     requestGetColorInfo()
   }, [hexCode])
 
-  const textColor = colorInfo && colorInfo.contrast.value === '#ffffff' ? '#eeeeee' : '#000'
+  const textColor = colorInfo?.contrast.value === '#ffffff' ? '#eeeeee' : '#000'
 
   return (
     <section
-      className={`w-full h-[32rem] flex flex-col justify-end items-center py-16`}
+      className={`w-full min-w-36 h-full flex flex-col justify-end items-center py-16`}
       style={{ backgroundColor: hexCode }}
       onMouseOver={() => setOverlay(true)}
       onMouseLeave={() => setOverlay(false)}
@@ -40,7 +39,7 @@ export default function ColorBox({ hexCode, deleteColor }: ColorBoxProps) {
           {hexCode}
         </p>
         <p className="text-sm" style={{ color: textColor }}>
-          {colorInfo ? colorInfo.name.value : '?'}
+          {colorInfo?.name.value || '?'}
         </p>
       </div>
     </section>

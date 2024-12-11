@@ -4,6 +4,7 @@ export const PATH = {
   EDITOR: '/editor',
   PALETTE: '/palette',
   MYPAGE: '/mypage',
+  MY_COLORS: '/mypage/my-colors',
 }
 
 export const PATH_NAMES = {
