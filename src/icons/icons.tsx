@@ -69,12 +69,16 @@ export const RefreshIcon = () => {
       stroke="currentColor"
       fill="currentColor"
       strokeWidth="0.3"
-      viewBox="0 0 24 24"
+      viewBox="0 0 16 16"
       height="24px"
       width="24px"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M2.5 10.5a8 8 0 1 1 16 0 .75.75 0 0 0 1.5 0 9.5 9.5 0 1 0-9.5 9.5h10.94l-2.72 2.72a.75.75 0 1 0 1.06 1.06l3.735-3.735c.44-.439.44-1.151 0-1.59L19.78 14.72a.75.75 0 0 0-1.06 1.06l2.72 2.72H10.5a8 8 0 0 1-8-8Z"></path>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.681 3H2V2h3.5l.5.5V6H5V4a5 5 0 1 0 4.53-.761l.302-.954A6 6 0 1 1 4.681 3z"
+      ></path>
     </svg>
   )
 }

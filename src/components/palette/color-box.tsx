@@ -6,7 +6,7 @@ import { getColorInfo } from '@/services/requests'
 
 type ColorBoxProps = {
   hexCode: string
-  deleteColor?: (hexCode: string) => void
+  deleteColor: (hexCode: string) => void
 }
 
 export default function ColorBox({ hexCode, deleteColor }: ColorBoxProps) {

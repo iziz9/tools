@@ -1,6 +1,6 @@
 'use client'
 import Modal from '@/components/common/modal'
-import ColorBox from '@/components/palette/color-box'
+import MyColorBox from '@/components/mypage/my-color-box'
 import { PATH } from '@/constants/path'
 import { ISavedColors } from '@/constants/types'
 import { PaletteIcon } from '@/icons/icons'
@@ -29,9 +29,13 @@ export default function MyPage() {
             전체보기
           </Link>
         </div>
-        <div className="border border-gray-200 w-full h-[26rem] mt-2 flex justify-around items-center">
+        <div className="border border-gray-200 w-full h-60 mt-2 flex justify-around items-center">
           {colors ? (
-            colors.map(color => <ColorBox key={color.hexCode} hexCode={color.hexCode} />)
+            colors.map(color => (
+              <div key={color.hexCode} className="w-full h-full">
+                <MyColorBox colorInfo={color} />
+              </div>
+            ))
           ) : (
             <div className="text-center">
               <p>저장된 색상이 없습니다.</p>

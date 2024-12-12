@@ -1,37 +1,25 @@
 'use client'
 import { useModalContext } from '@/context/modal-context'
-import { CopyIcon, HeartIcon, DeleteIcon, ShadeIcon, FilledHeartIcon } from '@/icons/icons'
+import { CopyIcon, HeartIcon, ShadeIcon, FilledHeartIcon } from '@/icons/icons'
 import { copyToClipboard } from '@/lib/palette-utils'
 import ShadeModal from '@/components/palette/shade-modal'
 import { checkSavedSameColor, deleteSavedColor, saveColor } from '@/lib/save-utils'
-import { IColorInfo } from '@/constants/types'
+import { ISavedColors } from '@/constants/types'
 import { useEffect, useState } from 'react'
 
 type ColorOverlayProps = {
-  hexCode: string
-  textColor: string
-  deleteColor: (hexCode: string) => void
-  colorInfo: IColorInfo | undefined
+  colorInfo: ISavedColors
 }
 
-export default function ColorOverlay({ hexCode, textColor, deleteColor, colorInfo }: ColorOverlayProps) {
-  const { openModal } = useModalContext()
+export default function MyColorOverlay({ colorInfo }: ColorOverlayProps) {
   const [isSaved, setIsSaved] = useState<boolean>(false)
+  const { openModal } = useModalContext()
+  const { hexCode, textColor } = colorInfo
 
   useEffect(() => {
-    const isColorSaved = checkSavedSameColor(hexCode)
+    const isColorSaved = checkSavedSameColor(colorInfo.hexCode)
     setIsSaved(isColorSaved)
-  }, [hexCode])
-
-  const saveMyColor = () => {
-    saveColor({ hexCode, textColor, colorName: colorInfo?.name.value || '?' })
-    setIsSaved(true)
-  }
-
-  const removeMyColor = () => {
-    deleteSavedColor(hexCode)
-    setIsSaved(false)
-  }
+  }, [colorInfo])
 
   const openShadeModal = () => {
     openModal({
@@ -40,8 +28,17 @@ export default function ColorOverlay({ hexCode, textColor, deleteColor, colorInf
     })
   }
 
+  const toggleSaveColor = (hexCode: string) => {
+    if (!isSaved) {
+      saveColor(colorInfo)
+      setIsSaved(true)
+    } else {
+      deleteSavedColor(hexCode)
+      setIsSaved(false)
+    }
+  }
+
   const colorBoxIcons = [
-    { icon: <DeleteIcon />, key: 'delete', onClick: (hexCode: string) => deleteColor && deleteColor(hexCode) },
     {
       icon: <ShadeIcon />,
       key: 'shade',
@@ -51,12 +48,12 @@ export default function ColorOverlay({ hexCode, textColor, deleteColor, colorInf
     {
       icon: isSaved ? <FilledHeartIcon /> : <HeartIcon />,
       key: 'heart',
-      onClick: isSaved ? removeMyColor : saveMyColor,
+      onClick: toggleSaveColor,
     },
   ]
 
   return (
-    <div style={{ color: textColor }} className="w-full h-full flex flex-col justify-center gap-3 items-center">
+    <div style={{ color: textColor }} className="w-full h-full flex justify-center gap-3 mb-4 items-center">
       {colorBoxIcons.map(item => (
         <button
           key={item.key}

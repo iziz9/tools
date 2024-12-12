@@ -2,28 +2,32 @@
 import Modal from '@/components/common/modal'
 import MyColorBox from '@/components/mypage/my-color-box'
 import { ISavedColors } from '@/constants/types'
-import { deleteSavedColor, getSavedColors } from '@/lib/save-utils'
-import { useEffect, useState } from 'react'
+import { RefreshIcon } from '@/icons/icons'
+import { getSavedColors } from '@/lib/save-utils'
+import { useLayoutEffect, useState } from 'react'
 
 export default function MyColors() {
   const [colors, setColors] = useState<ISavedColors[]>([])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const savedColors: ISavedColors[] = getSavedColors()
     setColors(savedColors.reverse())
   }, [])
 
-  const deleteColor = (hexCode: string) => {
-    deleteSavedColor(hexCode)
-    alert('색상이 삭제되었습니다. \n마이페이지에서 저장된 색상을 확인할 수 있습니다.')
-  }
-
   return (
-    <main>
+    <main className="mb-10">
       <Modal />
-      <div className="w-full h-60 flex flex-wrap">
+      <div className="flex justify-end py-5 px-6">
+        <button className="flex gap-1" onClick={() => alert('새로고칠것임')}>
+          <span className="text-bold">새로고침</span>
+          <RefreshIcon />
+        </button>
+      </div>
+      <div className="w-full flex flex-wrap justify-center">
         {colors.map(color => (
-          <MyColorBox key={color.hexCode} colorInfo={color} deleteColor={deleteColor} />
+          <div key={color.hexCode} className="w-1/4 min-w-60 h-60">
+            <MyColorBox colorInfo={color} />
+          </div>
         ))}
       </div>
     </main>
