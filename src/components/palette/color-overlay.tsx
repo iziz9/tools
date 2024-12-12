@@ -5,7 +5,7 @@ import { copyToClipboard } from '@/lib/palette-utils'
 import ShadeModal from '@/components/palette/shade-modal'
 import { checkSavedSameColor, deleteSavedColor, saveColor } from '@/lib/save-utils'
 import { IColorInfo } from '@/constants/types'
-import { use, useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type ColorOverlayProps = {
   hexCode: string
@@ -21,7 +21,7 @@ export default function ColorOverlay({ hexCode, textColor, deleteColor, colorInf
   useEffect(() => {
     const isColorSaved = checkSavedSameColor(hexCode)
     setIsSaved(isColorSaved)
-  }, [])
+  }, [hexCode])
 
   const saveMyColor = () => {
     saveColor({ hexCode, textColor, colorName: colorInfo?.name.value || '?' })

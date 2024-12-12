@@ -1,7 +1,6 @@
 'use client'
 import { ISavedColors } from '@/constants/types'
 import { FilledHeartIcon } from '@/icons/icons'
-import { deleteSavedColor } from '@/lib/save-utils'
 
 type MyColorBoxProps = {
   colorInfo: ISavedColors
