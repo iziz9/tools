@@ -12,6 +12,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Check Node version
         run: node -v
+      - name: Check files
+        run: ls -al
+      - name: Demo build - Install Dependencies
+        run: yarn install
+      - name: Demo build
+        run: yarn build
   deploy:
     name: Build and deploy to EC2
     needs: checkout
@@ -26,9 +32,8 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            npm --help
             cd /home/ubuntu/tools
             git pull origin main
-            npm install
-            npm run build
+            yarn install
+            yarn build
             pm2 restart all
