@@ -1,75 +1,119 @@
 'use client'
-import styles from '@/styles/main.module.css'
-import { useRef } from 'react'
+import ColorBox from '@/components/palette/color-box'
+import useColors from '@/hooks/useColors'
+import { CheckIcon, CopyIcon, HeartIcon, PlusIcon, RefreshIcon } from '@/icons/icons'
+import { KeyboardEvent, useEffect, useRef } from 'react'
+import { copyToClipboard } from '@/lib/palette-utils'
+import Modal from '@/components/common/modal'
 
-export default function Home() {
-  const frameRef = useRef<HTMLDivElement>(null)
-  const cardRef = useRef<HTMLDivElement>(null)
-  const lightRef = useRef<HTMLDivElement>(null)
+export default function PalettePage() {
+  const { refreshColors, plusPalette, deleteColor, paletteCount, hexArray } = useColors()
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const mouseMove = (e: MouseEvent) => {
-    if (!frameRef.current || !cardRef.current || !lightRef.current) return
+  useEffect(() => {
+    refreshColors()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-    const { x, y, width, height } = frameRef.current?.getBoundingClientRect()
-    const left = e.clientX - x
-    const top = e.clientY - y
-    const centerX = left - width / 2
-    const centerY = top - height / 2
-    const d = Math.sqrt(centerX ** 2 + centerY ** 2)
-
-    cardRef.current.style.transform = `rotate3D(${-centerY / 100}, ${centerX / 100}, 0, ${d / 10}deg)`
-    cardRef.current.style.boxShadow = `${-centerX / 10}px ${centerY / 10}px 10px rgba(0,0,0,0.2)`
-    lightRef.current.style.backgroundImage = `radial-gradient(circle at ${left}px ${top}px, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0), rgba(255, 255, 255, 0.2))`
+  const copyAllHexCodes = () => {
+    const allHexCodes = hexArray.join(', ')
+    copyToClipboard(allHexCodes)
   }
 
-  const addMouseMoveEvent = () => {
-    frameRef.current?.addEventListener('mousemove', mouseMove)
-  }
-  const deleteMouseMoveEvent = () => {
-    frameRef.current?.removeEventListener('mousemove', mouseMove)
+  const menuButtons = [
+    {
+      key: 'plus',
+      icon: <PlusIcon />,
+      tooltip: '팔레트 1칸 추가',
+      onclick: plusPalette,
+    },
+    {
+      key: 'refresh',
+      icon: <RefreshIcon />,
+      tooltip: '새로고침',
+      onclick: refreshColors,
+    },
+    {
+      key: 'copy',
+      icon: <CopyIcon />,
+      tooltip: '전체 코드 복사',
+      onclick: copyAllHexCodes,
+    },
+    {
+      key: 'save',
+      icon: <HeartIcon />,
+      tooltip: '팔레트 저장',
+      onclick: () => console.log('팔레트 저장'),
+    },
+  ]
 
-    if (cardRef.current && lightRef.current) {
-      cardRef.current.style.transform = ''
-      cardRef.current.style.boxShadow = ''
-      lightRef.current.style.backgroundImage = ''
+  const checkHexValidate = () => {
+    if (!inputRef.current) return false
+
+    if (inputRef.current.value.length < 7) {
+      alert('#과 6자리 코드를 모두 입력해주세요.')
+      return false
+    }
+
+    const regex = /^[A-Fa-f0-9#]+$/
+    if (!regex.test(inputRef.current.value)) {
+      alert('특수문자 #과 숫자, 영문자(A-F)만 입력 가능합니다.')
+      return false
+    }
+
+    return true
+  }
+
+  const addSpecificColor = () => {
+    if (!inputRef.current) return
+    const isValid = checkHexValidate()
+
+    if (isValid) return plusPalette(inputRef.current.value.replace('#', ''))
+  }
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return
+
+    switch (e.key) {
+      case 'Enter':
+        addSpecificColor()
+        break
+      case 'Escape':
+        e.currentTarget.value = ''
+        e.currentTarget.blur()
+        break
     }
   }
 
   return (
-    <main className="py-12 w-full h-full">
-      <p className="text-center pb-10 text-3xl font-bold">Hi! Welcome.</p>
-      <div className="flex align-middle gap-28 w-full h-full">
-        <section className="flex flex-col gap-8 items-center">
-          <div
-            ref={frameRef}
-            className={styles.frame}
-            onMouseEnter={addMouseMoveEvent}
-            onMouseLeave={deleteMouseMoveEvent}
-          >
-            <a href="https://github.com/iziz9" target="blank">
-              <div ref={cardRef} className={styles.card}>
-                <div ref={lightRef} className={styles.light}></div>
-              </div>
-            </a>
+    <main>
+      <Modal />
+      <div className="h-12 flex justify-end items-center gap-5">
+        <div className="tooltip" data-tooltip={'색상코드로 팔레트 추가'}>
+          <input
+            type="text"
+            placeholder="#FFFFFF"
+            maxLength={7}
+            className="w-40 h-9 leading-9 border-2 border-black rounded-sm px-3 py-1 text-sm placeholder:text-sm focus:outline-none"
+            ref={inputRef}
+            onKeyDown={handleKeyDown}
+          />
+          <div className="absolute top-1.5 right-2" onClick={addSpecificColor}>
+            <CheckIcon />
           </div>
-          <div className="text-gray-400">Enter your mouse!</div>
-        </section>
-        <section className="flex items-center">
-          <span>
-            Lorem ipsum odor amet, consectetuer adipiscing elit. Nisl nisl sociosqu sed nullam non sociosqu potenti enim
-            odio. Auctor donec efficitur cursus ridiculus lectus. At integer dui vivamus nibh inceptos primis lectus
-            habitant. Nisi imperdiet nunc fames facilisi euismod dui adipiscing. Cubilia sem hac cras gravida aliquet
-            lacus amet non. Non blandit pellentesque dictumst laoreet blandit. Euismod mattis proin viverra ridiculus
-            sociosqu felis nec arcu. Suscipit per imperdiet ullamcorper curabitur primis blandit. Pellentesque senectus
-            semper efficitur turpis gravida. Sit risus magna maecenas habitasse litora tincidunt ligula! Porta magnis
-            sapien magnis hendrerit taciti ligula; magna nostra accumsan. Efficitur dapibus convallis luctus risus
-            senectus iaculis. Ornare elementum curae netus facilisi senectus. Varius ullamcorper sed est ut torquent
-            massa ad montes. Auctor sit ridiculus class fermentum a eleifend erat. Finibus nostra lobortis phasellus
-            ultricies commodo imperdiet. Duis suspendisse tortor imperdiet dapibus ad facilisis non gravida. Metus
-            sollicitudin porta mus quisque nibh vulputate tincidunt. Elit gravida dignissim blandit felis consectetur
-            nisi nullam risus potenti.
-          </span>
-        </section>
+        </div>
+        {menuButtons.map(button => {
+          return button.key === 'plus' && paletteCount === 6 ? null : (
+            <button key={button.key} className="tooltip" data-tooltip={button.tooltip} onClick={() => button.onclick()}>
+              {button.icon}
+            </button>
+          )
+        })}
+      </div>
+      <div className="flex w-full h-[32rem]">
+        {hexArray.map(hex => (
+          <ColorBox key={hex} hexCode={hex} deleteColor={deleteColor} />
+        ))}
       </div>
     </main>
   )

@@ -1,8 +1,8 @@
 export const PATH = {
   HOME: '/',
+  PALETTE: '/',
   CONVERTER: '/converter',
   EDITOR: '/editor',
-  PALETTE: '/palette',
   MYPAGE: '/mypage',
   MY_COLORS: '/mypage/my-colors',
 }

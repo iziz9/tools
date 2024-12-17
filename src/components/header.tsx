@@ -6,9 +6,7 @@ export default function Header() {
   return (
     <header className="border-b border-stone-200 min-w-[750px]">
       <div className="w-full h-full lg:max-w-5xl p-4 m-auto flex gap-16 items-center">
-        <Link href={PATH.HOME}>
-          <Image src="/logo.webp" alt="logo" width={120} height={48} priority />
-        </Link>
+        <Image src="/logo.webp" alt="logo" width={120} height={48} priority />
         <nav className="flex w-full justify-between">
           <div className="flex gap-10">
             <Link href={PATH.PALETTE}>{PATH_NAMES[PATH.PALETTE]}</Link>
