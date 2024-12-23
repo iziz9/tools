@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 
-const MIN_SIZE = 50
-
 const useImageCrop = () => {
   const [onCropMode, setOnCropMode] = useState<boolean>(false)
   const [isDrawing, setIsDrawing] = useState(false) // 크롭 영역 선택중인지 판별
@@ -25,6 +23,7 @@ const useImageCrop = () => {
       cropLayer.removeEventListener('mousedown', onCropStartHandler)
       cropLayer.removeEventListener('mouseup', onCropEndHandler)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onCropMode])
 
   useEffect(() => {
@@ -36,6 +35,7 @@ const useImageCrop = () => {
     return () => {
       cropLayer.removeEventListener('mousemove', onCropAreaHandler)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDrawing])
 
   const onEditKeyDownHandler = (event: KeyboardEvent) => {
@@ -92,7 +92,7 @@ const useImageCrop = () => {
     if (!cropLayerRef.current) return
     console.log(selectedAreaRef.current)
 
-    const img = new Image()
+    // const img = new Image()
     // const imgUrl = URL.createObjectURL('')//
     // img.src = imgUrl
 

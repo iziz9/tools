@@ -2,14 +2,13 @@
 import useImageCrop from '@/hooks/useImageCrop'
 import { CancelIcon, CropIcon, DeleteBinIcon, SaveIcon, UploadIcon } from '@/icons/editorIcons'
 import { CheckIcon } from '@/icons/icons'
-import { removeFormat } from '@/lib/file-utils'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 export default function ImageEditor() {
   const [file, setFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
-  const { canvasRef, cropLayerRef, selectedAreaRef, onCropMode, setOnCropMode } = useImageCrop()
+  const { canvasRef, cropLayerRef, onCropMode, setOnCropMode } = useImageCrop()
 
   useEffect(() => {
     drawImage()
