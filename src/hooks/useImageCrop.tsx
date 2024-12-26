@@ -91,13 +91,24 @@ const useImageCrop = () => {
   const drawCroppedImg = () => {
     if (!cropLayerRef.current) return
     console.log(selectedAreaRef.current)
-
-    // const img = new Image()
-    // const imgUrl = URL.createObjectURL('')//
-    // img.src = imgUrl
-
+    const selectedArea = selectedAreaRef.current
     const cropLayer = cropLayerRef.current
     if (!cropLayer) return new Error('canvas를 사용할 수 없습니다.')
+
+    const img = new Image()
+    img.onload = () => {
+      img.width = selectedArea.eX - selectedArea.sX
+      img.height = selectedArea.eY - selectedArea.sY
+
+      cropLayer.width = img.width
+      cropLayer.height = img.height
+
+      const ctx = cropLayer.getContext('2d')
+      ctx?.drawImage(img, selectedArea.sX, selectedArea.sY, cropLayer.width, cropLayer.height)
+    }
+    img.onerror = () => {
+      new Error('이미지를 로드하는 데 실패했습니다.')
+    }
   }
 
   return { canvasRef, cropLayerRef, selectedAreaRef, onCropMode, setOnCropMode }

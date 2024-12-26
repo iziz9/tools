@@ -121,7 +121,10 @@ export default function ImageEditor() {
           <section className="relative w-full border-2 border-[#e5e7eb] bg-[#e5e7eb] p-5">
             <canvas ref={canvasRef} className="max-w-[80%] max-h-[550px] m-auto"></canvas>
             {onCropMode && (
-              <canvas ref={cropLayerRef} className="absolute inset-0 max-w-[80%] max-h-[550px] m-auto"></canvas>
+              <canvas
+                ref={cropLayerRef}
+                className="absolute inset-0 max-w-[80%] max-h-[550px] m-auto cursor-cell"
+              ></canvas>
             )}
           </section>
         </div>
