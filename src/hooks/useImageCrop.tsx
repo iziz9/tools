@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 
 const useImageCrop = () => {
   const [onCropMode, setOnCropMode] = useState<boolean>(false)
-  const [isDrawing, setIsDrawing] = useState(false) // 크롭 영역 선택중인지 판별
+  const [isDrawing, setIsDrawing] = useState<boolean>(false) // 크롭 영역 선택중인지 판별
+  const [originalImg, setOriginalImg] = useState<HTMLImageElement>()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cropLayerRef = useRef<HTMLCanvasElement>(null)
   const selectedAreaRef = useRef({ sX: 0, sY: 0, eX: 0, eY: 0 }) // 선택영역의 시작 및 끝 좌표값
@@ -28,10 +29,9 @@ const useImageCrop = () => {
 
   useEffect(() => {
     if (!isDrawing || !cropLayerRef.current) return
-
     const cropLayer = cropLayerRef.current
-
     cropLayer.addEventListener('mousemove', onCropAreaHandler) // 마우스를 누르고 끌 때
+
     return () => {
       cropLayer.removeEventListener('mousemove', onCropAreaHandler)
     }
@@ -39,8 +39,12 @@ const useImageCrop = () => {
   }, [isDrawing])
 
   const onEditKeyDownHandler = (event: KeyboardEvent) => {
-    if (event.key === 'Enter') console.log('적용하기')
-    if (event.key === 'Escape') setOnCropMode(false) //편집 취소
+    if (event.key === 'Enter') {
+      saveChanges()
+    }
+    if (event.key === 'Escape') {
+      cancelChanges()
+    }
   }
 
   const onCropStartHandler = (e: MouseEvent) => {
@@ -75,43 +79,92 @@ const useImageCrop = () => {
     const selectedEndX = eX - selectedArea.sX // 마우스를 이동한 x거리 (넓이)
     const selectedEndY = eY - selectedArea.sY // 마우스를 이동한 y거리 (높이)
 
-    const ctx = cropLayer.getContext('2d')
-    ctx?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height) // 다시 그릴 때 캔버스 초기화
-    ctx?.strokeRect(selectedArea.sX, selectedArea.sY, selectedEndX, selectedEndY) // 마우스를 이동한 좌표 영역만큼 사각형 그리기(시작x좌표, 시작y좌표, 넓이, 높이)
-
     selectedArea.eX = eX // 캔버스 내 좌표
     selectedArea.eY = eY // 캔버스 내 좌표
+
+    const ctx = cropLayer.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height) // 다시 그릴 때 캔버스 초기화
+    ctx.strokeRect(selectedArea.sX, selectedArea.sY, selectedEndX, selectedEndY) // 마우스를 이동한 좌표 영역만큼 사각형 그리기(시작x좌표, 시작y좌표, 넓이, 높이)
+    ctx.strokeStyle = 'rgba(79, 79, 79, 0.5)'
+    ctx.setLineDash([4, 2])
   }
 
   const onCropEndHandler = () => {
+    if (!canvasRef.current) return
     setIsDrawing(false)
+  }
+
+  const saveChanges = () => {
+    if (!canvasRef.current || !cropLayerRef.current) return
     drawCroppedImg()
+
+    const canvas = canvasRef.current
+    const cropLayer = cropLayerRef.current
+    canvas.width = cropLayer.width
+    canvas.height = cropLayer.height
+    const ctx = canvas.getContext('2d')
+    ctx?.drawImage(cropLayer, 0, 0, cropLayer.width, cropLayer.height)
+    setOnCropMode(false)
+  }
+
+  const cancelChanges = () => {
+    if (!cropLayerRef.current || !canvasRef.current) return
+
+    const ctx = cropLayerRef.current.getContext('2d')
+    ctx?.clearRect(0, 0, cropLayerRef.current.width, cropLayerRef.current.height)
+    setOnCropMode(false)
+  }
+
+  const returnToOriginal = () => {
+    if (!canvasRef.current || !originalImg || !cropLayerRef.current) return
+
+    const canvas = canvasRef.current
+    canvas.width = originalImg.width
+    canvas.height = originalImg.height
+    const ctx = canvas.getContext('2d')
+    ctx?.drawImage(originalImg, 0, 0, originalImg.width, originalImg.height)
+
+    const cropLayer = cropLayerRef.current
+    const layerCtx = cropLayer.getContext('2d')
+    layerCtx?.reset()
   }
 
   const drawCroppedImg = () => {
-    if (!cropLayerRef.current) return
-    console.log(selectedAreaRef.current)
+    if (!cropLayerRef.current || !canvasRef.current) return
+
     const selectedArea = selectedAreaRef.current
+
+    // 선택 영역의 너비와 높이 계산
+    const width = Math.abs(selectedArea.eX - selectedArea.sX)
+    const height = Math.abs(selectedArea.eY - selectedArea.sY)
+
+    // 시작점 계산 (음수 선택을 대비해 최소값 사용)
+    const startX = Math.min(selectedArea.sX, selectedArea.eX)
+    const startY = Math.min(selectedArea.sY, selectedArea.eY)
+
+    // cropLayer의 크기를 선택한 영역 크기로 조정
     const cropLayer = cropLayerRef.current
-    if (!cropLayer) return new Error('canvas를 사용할 수 없습니다.')
+    cropLayer.width = width
+    cropLayer.height = height
 
-    const img = new Image()
-    img.onload = () => {
-      img.width = selectedArea.eX - selectedArea.sX
-      img.height = selectedArea.eY - selectedArea.sY
+    // cropLayer에 선택 영역의 이미지를 그림
+    const cropCtx = cropLayer.getContext('2d')
+    if (!cropCtx) return
 
-      cropLayer.width = img.width
-      cropLayer.height = img.height
-
-      const ctx = cropLayer.getContext('2d')
-      ctx?.drawImage(img, selectedArea.sX, selectedArea.sY, cropLayer.width, cropLayer.height)
-    }
-    img.onerror = () => {
-      new Error('이미지를 로드하는 데 실패했습니다.')
-    }
+    cropCtx.drawImage(canvasRef.current, startX, startY, width, height, 0, 0, width, height)
   }
 
-  return { canvasRef, cropLayerRef, selectedAreaRef, onCropMode, setOnCropMode }
+  return {
+    canvasRef,
+    cropLayerRef,
+    onCropMode,
+    setOriginalImg,
+    setOnCropMode,
+    saveChanges,
+    cancelChanges,
+    returnToOriginal,
+  }
 }
 
 export default useImageCrop
