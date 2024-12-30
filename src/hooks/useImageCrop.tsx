@@ -12,8 +12,13 @@ const useImageCrop = () => {
     if (!onCropMode || !cropLayerRef.current || !canvasRef.current) return
 
     const cropLayer = cropLayerRef.current
-    cropLayer.width = canvasRef.current.width
-    cropLayer.height = canvasRef.current.height
+    const canvas = canvasRef.current
+
+    // cropLayer의 실제 크기를 canvas와 동일하게 설정
+    cropLayer.width = canvas.width
+    cropLayer.height = canvas.height
+    // cropLayer.width = canvasRef.current.clientWidth
+    // cropLayer.height = canvasRef.current.clientHeight
 
     window.addEventListener('keydown', onEditKeyDownHandler)
     cropLayer.addEventListener('mousedown', onCropStartHandler) //마우스를 누르기 시작할 때
@@ -47,17 +52,27 @@ const useImageCrop = () => {
     }
   }
 
+  // 좌표 변환을 위한 스케일 계산
+  const getCanvasScale = () => {
+    if (!canvasRef.current) return { scaleX: 1, scaleY: 1 }
+
+    const canvas = canvasRef.current
+    return {
+      scaleX: canvas.width / canvas.clientWidth,
+      scaleY: canvas.height / canvas.clientHeight,
+    }
+  }
+
   const onCropStartHandler = (e: MouseEvent) => {
     if (!cropLayerRef.current) return
 
     const cropLayer = cropLayerRef.current
     const selectedArea = selectedAreaRef.current
+    const { scaleX, scaleY } = getCanvasScale()
 
-    const canvasX = cropLayer.getBoundingClientRect().left // 캔버스의 시작점 - 뷰포트에서의 x좌표
-    const canvasY = cropLayer.getBoundingClientRect().top // 캔버스의 시작점 - 뷰포트에서의 y좌표
-
-    const sX = e.clientX - canvasX // 캔버스 안에서의 x좌표
-    const sY = e.clientY - canvasY // 캔버스 안에서의 y좌표
+    const cropLayerRect = cropLayer.getBoundingClientRect()
+    const sX = (e.clientX - cropLayerRect.left) * scaleX // 캔버스의 시작점 - 이미지에서의 x좌표
+    const sY = (e.clientY - cropLayerRect.top) * scaleY // 캔버스의 시작점 - 이미에서의 y좌표
 
     selectedArea.sX = sX
     selectedArea.sY = sY
@@ -69,12 +84,11 @@ const useImageCrop = () => {
 
     const cropLayer = cropLayerRef.current
     const selectedArea = selectedAreaRef.current
+    const { scaleX, scaleY } = getCanvasScale()
 
-    const canvasX = cropLayer.getBoundingClientRect().left // 캔버스의 시작점 - 뷰포트에서의 x좌표
-    const canvasY = cropLayer.getBoundingClientRect().top // 캔버스의 시작점 - 뷰포트에서의 y좌표
-
-    const eX = e.clientX - canvasX
-    const eY = e.clientY - canvasY
+    const cropLayerRect = cropLayer.getBoundingClientRect()
+    const eX = (e.clientX - cropLayerRect.left) * scaleX // 캔버스의 시작점 - 이미지에서의 x좌표
+    const eY = (e.clientY - cropLayerRect.top) * scaleY // 캔버스의 시작점 - 이미지에서의 y좌표
 
     const selectedEndX = eX - selectedArea.sX // 마우스를 이동한 x거리 (넓이)
     const selectedEndY = eY - selectedArea.sY // 마우스를 이동한 y거리 (높이)
@@ -84,10 +98,18 @@ const useImageCrop = () => {
 
     const ctx = cropLayer.getContext('2d')
     if (!ctx) return
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height) // 다시 그릴 때 캔버스 초기화
+
+    ctx.clearRect(0, 0, cropLayer.width, cropLayer.width) // 다시 그릴 때 캔버스 초기화 //clientWidth, width 차이?
+
+    // 선택영역 그리기
     ctx.strokeRect(selectedArea.sX, selectedArea.sY, selectedEndX, selectedEndY) // 마우스를 이동한 좌표 영역만큼 사각형 그리기(시작x좌표, 시작y좌표, 넓이, 높이)
-    ctx.strokeStyle = 'rgba(79, 79, 79, 0.5)'
+
+    ctx.strokeStyle = 'white'
     ctx.setLineDash([4, 2])
+    ctx.shadowOffsetX = 1.5
+    ctx.shadowOffsetY = 1.5
+    ctx.shadowBlur = 1
+    ctx.shadowColor = 'rgb(0 0 0 / 80%)'
   }
 
   const onCropEndHandler = () => {
@@ -103,8 +125,9 @@ const useImageCrop = () => {
     const cropLayer = cropLayerRef.current
     canvas.width = cropLayer.width
     canvas.height = cropLayer.height
+
     const ctx = canvas.getContext('2d')
-    ctx?.drawImage(cropLayer, 0, 0, cropLayer.width, cropLayer.height)
+    ctx?.drawImage(cropLayer, 0, 0, cropLayer.clientWidth, cropLayer.clientHeight)
     setOnCropMode(false)
   }
 
@@ -125,7 +148,10 @@ const useImageCrop = () => {
     const ctx = canvas.getContext('2d')
     ctx?.drawImage(originalImg, 0, 0, originalImg.width, originalImg.height)
 
+    // cropLayer를 원본 이미지크기로 리셋
     const cropLayer = cropLayerRef.current
+    cropLayer.width = originalImg.width
+    cropLayer.height = originalImg.height
     const layerCtx = cropLayer.getContext('2d')
     layerCtx?.reset()
   }

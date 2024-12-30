@@ -120,13 +120,15 @@ export default function ImageEditor() {
               )}
             </div>
           </section>
-          <section className="relative w-full border-2 border-[#e5e7eb] bg-[#e5e7eb] p-5">
-            <canvas ref={canvasRef} className="max-w-[80%] max-h-[550px] m-auto" />
-            <canvas
-              ref={cropLayerRef}
-              style={{ cursor: onCropMode ? 'cell' : 'auto' }}
-              className="absolute inset-0 max-w-[80%] max-h-[550px] m-auto cursor-cell"
-            />
+          <section className="relative border-2 w-full border-[#e5e7eb] bg-[#e5e7eb] p-5">
+            <div className="relative max-w-[80%] m-auto">
+              <canvas ref={canvasRef} className="relative max-w-full m-auto" />
+              <canvas
+                ref={cropLayerRef}
+                style={{ cursor: onCropMode ? 'cell' : 'auto' }}
+                className="absolute inset-0 max-w-full max-h-full m-auto"
+              />
+            </div>
           </section>
         </div>
       ) : (
