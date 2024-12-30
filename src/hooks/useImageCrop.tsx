@@ -12,13 +12,8 @@ const useImageCrop = () => {
     if (!onCropMode || !cropLayerRef.current || !canvasRef.current) return
 
     const cropLayer = cropLayerRef.current
-    const canvas = canvasRef.current
-
     // cropLayer의 실제 크기를 canvas와 동일하게 설정
-    cropLayer.width = canvas.width
-    cropLayer.height = canvas.height
-    // cropLayer.width = canvasRef.current.clientWidth
-    // cropLayer.height = canvasRef.current.clientHeight
+    syncLayersSize()
 
     window.addEventListener('keydown', onEditKeyDownHandler)
     cropLayer.addEventListener('mousedown', onCropStartHandler) //마우스를 누르기 시작할 때
@@ -50,6 +45,17 @@ const useImageCrop = () => {
     if (event.key === 'Escape') {
       cancelChanges()
     }
+  }
+
+  // cropLayer와 canvasLayer 크기 동기화
+  const syncLayersSize = () => {
+    if (!cropLayerRef.current || !canvasRef.current) return
+
+    const canvas = canvasRef.current
+    const cropLayer = cropLayerRef.current
+
+    cropLayer.width = canvas.width
+    cropLayer.height = canvas.height
   }
 
   // 좌표 변환을 위한 스케일 계산
@@ -128,6 +134,7 @@ const useImageCrop = () => {
 
     const ctx = canvas.getContext('2d')
     ctx?.drawImage(cropLayer, 0, 0, cropLayer.clientWidth, cropLayer.clientHeight)
+    syncLayersSize()
     setOnCropMode(false)
   }
 
@@ -149,10 +156,11 @@ const useImageCrop = () => {
     ctx?.drawImage(originalImg, 0, 0, originalImg.width, originalImg.height)
 
     // cropLayer를 원본 이미지크기로 리셋
-    const cropLayer = cropLayerRef.current
-    cropLayer.width = originalImg.width
-    cropLayer.height = originalImg.height
-    const layerCtx = cropLayer.getContext('2d')
+    syncLayersSize()
+    // 선택 영역 초기화
+    selectedAreaRef.current = { sX: 0, sY: 0, eX: 0, eY: 0 }
+    // 크롭 레이어 초기화
+    const layerCtx = cropLayerRef.current.getContext('2d')
     layerCtx?.reset()
   }
 
