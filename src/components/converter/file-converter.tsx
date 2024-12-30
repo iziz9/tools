@@ -2,6 +2,7 @@
 import { imgFormat } from '@/constants/names'
 import { formatFileSize, imgUrlToBlob, removeFormat } from '@/lib/file-utils'
 import { ChangeEvent, MouseEvent, useRef, useState } from 'react'
+import FileUploader from '../common/file-uploader'
 
 export default function FileConverter() {
   const [file, setFile] = useState<File | null>(null)
@@ -10,10 +11,6 @@ export default function FileConverter() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
-
-  const openFileSelectWindow = () => {
-    fileInputRef.current?.click()
-  }
 
   const fileChangeAction = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
@@ -73,20 +70,10 @@ export default function FileConverter() {
 
   return (
     <div className="w-full flex flex-col gap-12">
-      <label
-        htmlFor="file"
-        onClick={openFileSelectWindow}
-        className="w-40 h-10 leading-10 bg-tools text-white m-auto text-lg text-center cursor-pointer"
-      >
-        파일 선택
-      </label>
-      <input
-        type="file"
-        name="file"
-        ref={fileInputRef}
-        className="hidden"
-        accept="image/*"
-        onChange={fileChangeAction}
+      <FileUploader
+        fileChangeAction={fileChangeAction}
+        fileInputRef={fileInputRef}
+        size={{ width: '100%', height: '150px' }}
       />
       {file && (
         <div className="flex flex-col gap-12">
