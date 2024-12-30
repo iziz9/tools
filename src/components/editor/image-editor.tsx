@@ -1,8 +1,9 @@
 'use client'
 import useImageCrop from '@/hooks/useImageCrop'
-import { CancelIcon, CropIcon, DeleteBinIcon, SaveIcon, UploadIcon } from '@/icons/editorIcons'
+import { CancelIcon, CropIcon, DeleteBinIcon, SaveIcon } from '@/icons/editorIcons'
 import { CheckIcon } from '@/icons/icons'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import FileUploader from './file-uploader'
 
 export default function ImageEditor() {
   const [file, setFile] = useState<File | null>(null)
@@ -23,10 +24,6 @@ export default function ImageEditor() {
     drawImage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file])
-
-  const openFileSelectWindow = () => {
-    fileInputRef.current?.click()
-  }
 
   const fileChangeAction = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
@@ -82,75 +79,54 @@ export default function ImageEditor() {
     downloadRef.current.click() //다운로드 링크 클릭이벤트 발생
   }
 
+  if (!file) return <FileUploader fileChangeAction={fileChangeAction} fileInputRef={fileInputRef} />
+
   return (
-    <div>
-      {file ? (
-        <div className="w-full flex flex-col gap-3">
-          <section className="flex justify-between border border-[#e5e7eb] rounded-lg px-5 py-2 text-gray-600">
-            <button onClick={deleteFile}>
-              <DeleteBinIcon />
-            </button>
-            <div className="flex gap-5">
-              {onCropMode ? (
-                <div className="flex gap-3">
-                  <button className="text-sm px-3 rounded-md flex gap-1 items-center" onClick={cancelChanges}>
-                    <CancelIcon />
-                    <span>편집 취소</span>
-                  </button>
-                  <button className="text-sm px-3 rounded-md flex gap-1 items-center" onClick={saveChanges}>
-                    <CheckIcon />
-                    <span>적용하기</span>
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <button onClick={returnToOriginal}>초기화</button>
-                  <button
-                    onClick={() => {
-                      setOnCropMode(true)
-                    }}
-                  >
-                    <CropIcon />
-                  </button>
-                  <button onClick={saveImg}>
-                    <SaveIcon />
-                  </button>
-                  <a href="" ref={downloadRef} className="hidden"></a>
-                </>
-              )}
+    <div className="w-full flex flex-col gap-3">
+      <section className="flex justify-between border border-[#e5e7eb] rounded-lg px-5 py-2 text-gray-600">
+        <button onClick={deleteFile}>
+          <DeleteBinIcon />
+        </button>
+        <div className="flex gap-5">
+          {onCropMode ? (
+            <div className="flex gap-3">
+              <button className="text-sm px-3 rounded-md flex gap-1 items-center" onClick={cancelChanges}>
+                <CancelIcon />
+                <span>편집 취소</span>
+              </button>
+              <button className="text-sm px-3 rounded-md flex gap-1 items-center" onClick={saveChanges}>
+                <CheckIcon />
+                <span>적용하기</span>
+              </button>
             </div>
-          </section>
-          <section className="relative border-2 w-full border-[#e5e7eb] bg-[#e5e7eb] p-5">
-            <div className="relative max-w-[80%] m-auto">
-              <canvas ref={canvasRef} className="relative max-w-full m-auto" />
-              <canvas
-                ref={cropLayerRef}
-                style={{ cursor: onCropMode ? 'cell' : 'auto' }}
-                className="absolute inset-0 max-w-full max-h-full m-auto"
-              />
-            </div>
-          </section>
+          ) : (
+            <>
+              <button onClick={returnToOriginal}>초기화</button>
+              <button
+                onClick={() => {
+                  setOnCropMode(true)
+                }}
+              >
+                <CropIcon />
+              </button>
+              <button onClick={saveImg}>
+                <SaveIcon />
+              </button>
+              <a href="" ref={downloadRef} className="hidden"></a>
+            </>
+          )}
         </div>
-      ) : (
-        <div className="mt-20">
-          <label
-            htmlFor="file"
-            onClick={openFileSelectWindow}
-            className="w-full h-80 flex flex-col justify-center items-center gap-3 border-2 border-dashed rounded-lg text-center cursor-pointer border-[#e5e7eb]"
-          >
-            <UploadIcon />
-            <span>이미지를 선택해주세요.</span>
-          </label>
-          <input
-            type="file"
-            name="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            onChange={fileChangeAction}
+      </section>
+      <section className="relative border-2 w-full border-[#e5e7eb] bg-[#e5e7eb] p-5">
+        <div className="relative max-w-[80%] m-auto">
+          <canvas ref={canvasRef} className="relative max-w-full m-auto" />
+          <canvas
+            ref={cropLayerRef}
+            style={{ cursor: onCropMode ? 'cell' : 'auto' }}
+            className="absolute inset-0 max-w-full max-h-full m-auto"
           />
         </div>
-      )}
+      </section>
     </div>
   )
 }
