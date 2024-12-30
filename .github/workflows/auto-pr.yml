@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+permissions:
+  contents: write
 
 jobs:
   create-pr:
@@ -22,6 +24,6 @@ jobs:
         with:
           token: ${{ secrets.AUTO_PR_TOKEN }}
           base: main
-          branch: develop
+          branch: ${{ github.ref }}
           title: Changes by create-pull-request action from develop branch
           body: Changes by create-pull-request action from develop branch
