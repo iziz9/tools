@@ -1,0 +1,29 @@
+name: Automatically create PR
+
+on:
+  push:
+    branches:
+      - develop
+permissions:
+  contents: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository source code
+        uses: actions/checkout@v3
+      - name: Demo build - Install Dependencies
+        run: yarn install
+      - name: Demo build
+        run: yarn build
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.AUTO_PR_TOKEN }}
+          base: main
+          branch: ${{ github.ref }}
+          title: Changes by create-pull-request action from develop branch
+          body: Changes by create-pull-request action from develop branch

@@ -8,7 +8,16 @@ export default function ImageEditor() {
   const [file, setFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
-  const { canvasRef, cropLayerRef, onCropMode, setOnCropMode } = useImageCrop()
+  const {
+    canvasRef,
+    cropLayerRef,
+    onCropMode,
+    setOnCropMode,
+    saveChanges,
+    cancelChanges,
+    setOriginalImg,
+    returnToOriginal,
+  } = useImageCrop()
 
   useEffect(() => {
     drawImage()
@@ -40,6 +49,7 @@ export default function ImageEditor() {
     const img = new Image() // 동적으로 이미지 생성
     const imgUrl = URL.createObjectURL(file) // 업로드한 파일에서 생성한 url을 img.src로 지정
     img.src = imgUrl
+    setOriginalImg(img)
 
     const canvas = canvasRef.current
     if (!canvas) return new Error('canvas를 사용할 수 없습니다.')
@@ -65,7 +75,7 @@ export default function ImageEditor() {
     if (!fileName) return
 
     const canvas = canvasRef.current
-    const dataURL = canvas.toDataURL('image/png')
+    const dataURL = canvas.toDataURL(`image/${'png'}`)
 
     downloadRef.current.href = dataURL
     downloadRef.current.download = `${fileName}.png` // 다운로드 시 파일이름 설정
@@ -83,26 +93,18 @@ export default function ImageEditor() {
             <div className="flex gap-5">
               {onCropMode ? (
                 <div className="flex gap-3">
-                  <button
-                    className="text-sm px-3 rounded-md flex gap-1 items-center"
-                    onClick={() => setOnCropMode(false)}
-                  >
+                  <button className="text-sm px-3 rounded-md flex gap-1 items-center" onClick={cancelChanges}>
                     <CancelIcon />
                     <span>편집 취소</span>
                   </button>
-                  <button
-                    className="text-sm px-3 rounded-md flex gap-1 items-center"
-                    onClick={() => {
-                      setOnCropMode(false)
-                      console.log('자르기')
-                    }}
-                  >
+                  <button className="text-sm px-3 rounded-md flex gap-1 items-center" onClick={saveChanges}>
                     <CheckIcon />
                     <span>적용하기</span>
                   </button>
                 </div>
               ) : (
                 <>
+                  <button onClick={returnToOriginal}>초기화</button>
                   <button
                     onClick={() => {
                       setOnCropMode(true)
@@ -118,11 +120,15 @@ export default function ImageEditor() {
               )}
             </div>
           </section>
-          <section className="relative w-full border-2 border-[#e5e7eb] bg-[#e5e7eb] p-5">
-            <canvas ref={canvasRef} className="max-w-[80%] max-h-[550px] m-auto"></canvas>
-            {onCropMode && (
-              <canvas ref={cropLayerRef} className="absolute inset-0 max-w-[80%] max-h-[550px] m-auto"></canvas>
-            )}
+          <section className="relative border-2 w-full border-[#e5e7eb] bg-[#e5e7eb] p-5">
+            <div className="relative max-w-[80%] m-auto">
+              <canvas ref={canvasRef} className="relative max-w-full m-auto" />
+              <canvas
+                ref={cropLayerRef}
+                style={{ cursor: onCropMode ? 'cell' : 'auto' }}
+                className="absolute inset-0 max-w-full max-h-full m-auto"
+              />
+            </div>
           </section>
         </div>
       ) : (
