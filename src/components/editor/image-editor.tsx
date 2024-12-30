@@ -3,7 +3,7 @@ import useImageCrop from '@/hooks/useImageCrop'
 import { CancelIcon, CropIcon, DeleteBinIcon, SaveIcon } from '@/icons/editorIcons'
 import { CheckIcon } from '@/icons/icons'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
-import FileUploader from './file-uploader'
+import FileUploader from '../common/file-uploader'
 
 export default function ImageEditor() {
   const [file, setFile] = useState<File | null>(null)
@@ -79,7 +79,16 @@ export default function ImageEditor() {
     downloadRef.current.click() //다운로드 링크 클릭이벤트 발생
   }
 
-  if (!file) return <FileUploader fileChangeAction={fileChangeAction} fileInputRef={fileInputRef} />
+  if (!file)
+    return (
+      <div className="py-20">
+        <FileUploader
+          fileChangeAction={fileChangeAction}
+          fileInputRef={fileInputRef}
+          size={{ width: '100%', height: '320px' }}
+        />
+      </div>
+    )
 
   return (
     <div className="w-full flex flex-col gap-3">
