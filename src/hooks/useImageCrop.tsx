@@ -18,17 +18,20 @@ const useImageCrop = () => {
     window.addEventListener('keydown', onEditKeyDownHandler)
     cropLayer.addEventListener('mousedown', onCropStartHandler) //마우스를 누르기 시작할 때
     cropLayer.addEventListener('mouseup', onCropEndHandler)
+    window.addEventListener('mouseup', onCropEndHandler) // 크롭모드인데 마우스가 이미지 밖에 있을 때
 
     return () => {
       window.removeEventListener('keydown', onEditKeyDownHandler)
       cropLayer.removeEventListener('mousedown', onCropStartHandler)
       cropLayer.removeEventListener('mouseup', onCropEndHandler)
+      window.removeEventListener('mouseup', onCropEndHandler)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onCropMode])
 
   useEffect(() => {
     if (!isDrawing || !cropLayerRef.current) return
+
     const cropLayer = cropLayerRef.current
     cropLayer.addEventListener('mousemove', onCropAreaHandler) // 마우스를 누르고 끌 때
 
@@ -69,6 +72,17 @@ const useImageCrop = () => {
     }
   }
 
+  // 선택영역을 캔버스 범위 내로 제한
+  const limitStroke = (x: number, y: number) => {
+    const canvas = canvasRef.current
+    if (!canvas) return { x: 0, y: 0 }
+
+    return {
+      x: Math.max(0, Math.min(x, canvas.width)),
+      y: Math.max(0, Math.min(y, canvas.height)),
+    }
+  }
+
   const onCropStartHandler = (e: MouseEvent) => {
     if (!cropLayerRef.current) return
 
@@ -80,8 +94,12 @@ const useImageCrop = () => {
     const sX = (e.clientX - cropLayerRect.left) * scaleX // 캔버스의 시작점 - 이미지에서의 x좌표
     const sY = (e.clientY - cropLayerRect.top) * scaleY // 캔버스의 시작점 - 이미에서의 y좌표
 
-    selectedArea.sX = sX
-    selectedArea.sY = sY
+    const { x: strokeX, y: strokeY } = limitStroke(sX, sY) // 선택영역을 캔버스 범위 내로 제한
+
+    selectedArea.sX = strokeX
+    selectedArea.sY = strokeY
+    selectedArea.eX = strokeX //초기 끝점을 시작점과 동일하게 설정
+    selectedArea.eY = strokeY
     setIsDrawing(true)
   }
 
@@ -96,11 +114,14 @@ const useImageCrop = () => {
     const eX = (e.clientX - cropLayerRect.left) * scaleX // 캔버스의 시작점 - 이미지에서의 x좌표
     const eY = (e.clientY - cropLayerRect.top) * scaleY // 캔버스의 시작점 - 이미지에서의 y좌표
 
+    // 끝점 좌표를 캔버스 범위 내로 제한
+    const { x: strokeX, y: strokeY } = limitStroke(eX, eY) // 선택영역을 캔버스 범위 내로 제한
+
+    selectedArea.eX = strokeX // 캔버스 내 좌표
+    selectedArea.eY = strokeY // 캔버스 내 좌표
+
     const selectedEndX = eX - selectedArea.sX // 마우스를 이동한 x거리 (넓이)
     const selectedEndY = eY - selectedArea.sY // 마우스를 이동한 y거리 (높이)
-
-    selectedArea.eX = eX // 캔버스 내 좌표
-    selectedArea.eY = eY // 캔버스 내 좌표
 
     const ctx = cropLayer.getContext('2d')
     if (!ctx) return
@@ -125,7 +146,9 @@ const useImageCrop = () => {
 
   const saveChanges = () => {
     if (!canvasRef.current || !cropLayerRef.current) return
-    drawCroppedImg()
+    const cropResult = drawCroppedImg()
+    if (!cropResult) return cancelChanges()
+    //크롭 실패 시 저장 취소
 
     const canvas = canvasRef.current
     const cropLayer = cropLayerRef.current
@@ -144,6 +167,7 @@ const useImageCrop = () => {
     const ctx = cropLayerRef.current.getContext('2d')
     ctx?.clearRect(0, 0, cropLayerRef.current.width, cropLayerRef.current.height)
     setOnCropMode(false)
+    onCropEndHandler()
   }
 
   const returnToOriginal = () => {
@@ -173,6 +197,11 @@ const useImageCrop = () => {
     const width = Math.abs(selectedArea.eX - selectedArea.sX)
     const height = Math.abs(selectedArea.eY - selectedArea.sY)
 
+    // 선택영역 최소값 설정
+    if (width < 10 || height < 10) {
+      return false
+    }
+
     // 시작점 계산 (음수 선택을 대비해 최소값 사용)
     const startX = Math.min(selectedArea.sX, selectedArea.eX)
     const startY = Math.min(selectedArea.sY, selectedArea.eY)
@@ -186,7 +215,13 @@ const useImageCrop = () => {
     const cropCtx = cropLayer.getContext('2d')
     if (!cropCtx) return
 
-    cropCtx.drawImage(canvasRef.current, startX, startY, width, height, 0, 0, width, height)
+    try {
+      cropCtx.drawImage(canvasRef.current, startX, startY, width, height, 0, 0, width, height)
+      return true
+    } catch (err) {
+      console.log(err)
+      return false
+    }
   }
 
   return {
