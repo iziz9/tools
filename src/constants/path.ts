@@ -1,6 +1,6 @@
 export const PATH = {
   HOME: '/',
-  PALETTE: '/',
+  PALETTE: '/palette',
   CONVERTER: '/converter',
   EDITOR: '/editor',
   MYPAGE: '/mypage',
