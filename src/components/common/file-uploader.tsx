@@ -6,18 +6,15 @@ interface IFileUploader {
   fileChangeAction: (e: ChangeEvent<HTMLInputElement>) => Promise<void>
   fileInputRef: RefObject<HTMLInputElement>
   size: { width: string; height: string }
+  openSelectWindow: () => void
 }
 
-export default function FileUploader({ fileChangeAction, fileInputRef, size }: IFileUploader) {
-  const openFileSelectWindow = () => {
-    fileInputRef.current?.click()
-  }
-
+export default function FileUploader({ fileChangeAction, fileInputRef, size, openSelectWindow }: IFileUploader) {
   return (
     <div>
       <label
         htmlFor="file"
-        onClick={openFileSelectWindow}
+        onClick={openSelectWindow}
         style={{ width: size.width, height: size.height }}
         className="flex flex-col justify-center items-center gap-3 border-2 border-dashed rounded-lg text-center cursor-pointer border-[#e5e7eb]"
       >

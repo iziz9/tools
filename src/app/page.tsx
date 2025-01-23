@@ -1,55 +1,21 @@
 'use client'
-
+import { useEffect, useRef } from 'react'
+import useFileUpload from '@/hooks/useFileUpload'
 import styles from '@/styles/main.module.css'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import useCanvas from '@/hooks/useCanvas'
 
 export default function Home() {
-  const [file, setFile] = useState<File | null>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const lightRef = useRef<HTMLDivElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { canvasRef, drawImage } = useCanvas()
+  const { file, fileInputRef, changeFile, openFileSelectWindow } = useFileUpload()
 
   useEffect(() => {
     if (!file) return
-    drawImage()
+    drawImage({ file })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file])
-
-  const fileChangeAction = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-    const file = e.target.files[0]
-    if (!file) return
-
-    setFile(file)
-  }
-
-  const drawImage = () => {
-    if (!file) return
-
-    const img = new Image()
-    const imgUrl = URL.createObjectURL(file)
-    img.src = imgUrl
-
-    const canvas = canvasRef.current
-    if (!canvas) return new Error('canvas를 사용할 수 없습니다.')
-
-    img.onload = () => {
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      ctx?.drawImage(img, 0, 0, img.width, img.height)
-      URL.revokeObjectURL(imgUrl)
-    }
-    img.onerror = () => {
-      new Error('이미지를 로드하는 데 실패했습니다.')
-      URL.revokeObjectURL(imgUrl)
-    }
-  }
-  const openFileSelectWindow = () => {
-    fileInputRef.current?.click()
-  }
 
   const mouseMove = (e: MouseEvent) => {
     if (!frameRef.current || !cardRef.current || !lightRef.current) return
@@ -89,7 +55,7 @@ export default function Home() {
             onMouseEnter={addMouseMoveEvent}
             onMouseLeave={deleteMouseMoveEvent}
           >
-            <label htmlFor="file" onClick={openFileSelectWindow} className="cursor-pointer">
+            <label htmlFor="file" onClick={() => openFileSelectWindow()} className="cursor-pointer">
               <div ref={cardRef} className={styles.card} style={!file ? { backgroundImage: 'url("/card.webp")' } : {}}>
                 {file && <canvas ref={canvasRef} className={styles.card}></canvas>}
                 <div ref={lightRef} className={styles.light}></div>
@@ -101,7 +67,7 @@ export default function Home() {
               ref={fileInputRef}
               className="hidden"
               accept="image/*"
-              onChange={fileChangeAction}
+              onChange={changeFile}
             />
           </div>
           <div className="text-gray-400">Enter your mouse!</div>
