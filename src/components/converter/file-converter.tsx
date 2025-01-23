@@ -29,19 +29,18 @@ export default function FileConverter() {
       return alert('파일 형식을 선택해주세요.')
     }
 
-    const img = new Image() // 동적으로 이미지 생성
-    const imgUrl = URL.createObjectURL(file) // 업로드한 파일에서 생성한 url을 img.src로 지정
+    const img = new Image()
+    const imgUrl = URL.createObjectURL(file)
     img.src = imgUrl
 
     const canvas = canvasRef.current
     if (!canvas) return new Error('canvas를 사용할 수 없습니다.')
 
     img.onload = () => {
-      // 이미지가 성공적으로 로드되면
       canvas.width = img.width
       canvas.height = img.height
-      const ctx = canvas.getContext('2d') // 2d 드로잉 영역에 접근
-      ctx?.drawImage(img, 0, 0) // 업로드한 이미지를 캔버스에 그리기(이미지객체, x좌표, y좌표)
+      const ctx = canvas.getContext('2d')
+      ctx?.drawImage(img, 0, 0)
 
       const dataURL = canvas.toDataURL(`image/${selectedFormat}`)
 
@@ -53,7 +52,7 @@ export default function FileConverter() {
         const convertedFile = imgUrlToBlob(dataURL) // 변환된 파일 사이즈 체크
         setConvertedFileSize(formatFileSize(convertedFile.size))
 
-        return URL.revokeObjectURL(imgUrl) // 캐싱된 이미지 URL 해제(메모리관리, 같은 url 중복 생성 및 다운로드 중복 방지)
+        return URL.revokeObjectURL(imgUrl)
       }
     }
     img.onerror = () => {

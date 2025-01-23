@@ -2,42 +2,20 @@
 import { useEffect, useRef } from 'react'
 import useFileUpload from '@/hooks/useFileUpload'
 import styles from '@/styles/main.module.css'
+import useCanvas from '@/hooks/useCanvas'
 
 export default function Home() {
   const frameRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const lightRef = useRef<HTMLDivElement>(null)
+  const { canvasRef, drawImage } = useCanvas()
   const { file, fileInputRef, changeFile, openFileSelectWindow } = useFileUpload()
 
   useEffect(() => {
     if (!file) return
-    drawImage()
+    drawImage({ file })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file])
-
-  const drawImage = () => {
-    if (!file) return
-
-    const img = new Image()
-    const imgUrl = URL.createObjectURL(file)
-    img.src = imgUrl
-
-    const canvas = canvasRef.current
-    if (!canvas) return new Error('canvas를 사용할 수 없습니다.')
-
-    img.onload = () => {
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      ctx?.drawImage(img, 0, 0, img.width, img.height)
-      URL.revokeObjectURL(imgUrl)
-    }
-    img.onerror = () => {
-      new Error('이미지를 로드하는 데 실패했습니다.')
-      URL.revokeObjectURL(imgUrl)
-    }
-  }
 
   const mouseMove = (e: MouseEvent) => {
     if (!frameRef.current || !cardRef.current || !lightRef.current) return

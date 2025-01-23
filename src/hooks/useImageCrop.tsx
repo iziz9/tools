@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 
-const useImageCrop = () => {
+const useImageCrop = (canvasRef: RefObject<HTMLCanvasElement>) => {
   const [onCropMode, setOnCropMode] = useState<boolean>(false)
   const [isDrawing, setIsDrawing] = useState<boolean>(false) // 크롭 영역 선택중인지 판별
   const [originalImg, setOriginalImg] = useState<HTMLImageElement>()
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const cropLayerRef = useRef<HTMLCanvasElement>(null)
   const selectedAreaRef = useRef({ sX: 0, sY: 0, eX: 0, eY: 0 }) // 선택영역의 시작 및 끝 좌표값
 
