@@ -2,12 +2,11 @@
 import useImageCrop from '@/hooks/useImageCrop'
 import { CancelIcon, CropIcon, DeleteBinIcon, SaveIcon } from '@/icons/editorIcons'
 import { CheckIcon } from '@/icons/icons'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import FileUploader from '../common/file-uploader'
+import useFileUpload from '@/hooks/useFileUpload'
 
 export default function ImageEditor() {
-  const [file, setFile] = useState<File | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
   const {
     canvasRef,
@@ -19,24 +18,19 @@ export default function ImageEditor() {
     setOriginalImg,
     returnToOriginal,
   } = useImageCrop()
+  const { file, fileInputRef, changeFile, openFileSelectWindow, deleteFile } = useFileUpload()
 
   useEffect(() => {
     drawImage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file])
 
-  const fileChangeAction = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-
-    const file = e.target.files[0]
-    setFile(file)
-  }
-
-  const deleteFile = () => {
+  const deleteAction = () => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     ctx?.clearRect(0, 0, canvas?.width || 0, canvas?.height || 0)
-    setFile(null)
+
+    deleteFile()
     setOnCropMode(false)
   }
 
@@ -83,9 +77,10 @@ export default function ImageEditor() {
     return (
       <div className="py-20">
         <FileUploader
-          fileChangeAction={fileChangeAction}
+          fileChangeAction={changeFile}
           fileInputRef={fileInputRef}
           size={{ width: '100%', height: '320px' }}
+          openSelectWindow={openFileSelectWindow}
         />
       </div>
     )
@@ -93,7 +88,7 @@ export default function ImageEditor() {
   return (
     <div className="w-full flex flex-col gap-3">
       <section className="flex justify-between border border-[#e5e7eb] rounded-lg px-5 py-2 text-gray-600">
-        <button onClick={deleteFile}>
+        <button onClick={deleteAction}>
           <DeleteBinIcon />
         </button>
         <div className="flex gap-5">

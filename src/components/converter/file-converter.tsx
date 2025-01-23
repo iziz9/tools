@@ -3,29 +3,23 @@ import { imgFormat } from '@/constants/names'
 import { formatFileSize, imgUrlToBlob, removeFormat } from '@/lib/file-utils'
 import { ChangeEvent, MouseEvent, useRef, useState } from 'react'
 import FileUploader from '../common/file-uploader'
+import useFileUpload from '@/hooks/useFileUpload'
 
 export default function FileConverter() {
-  const [file, setFile] = useState<File | null>(null)
   const [selectedFormat, setSelectedFormat] = useState<string>('...')
   const [convertedFileSize, setConvertedFileSize] = useState<string>('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
+  const { file, fileInputRef, changeFile, openFileSelectWindow, deleteFile } = useFileUpload()
 
   const fileChangeAction = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-
-    const file = e.target.files[0]
-    setFile(file)
+    changeFile(e)
     setConvertedFileSize('')
   }
 
-  const deleteFile = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-      setFile(null)
-      setConvertedFileSize('')
-    }
+  const deleteAction = () => {
+    deleteFile()
+    setConvertedFileSize('')
   }
 
   const convertImage = (e: MouseEvent<HTMLButtonElement>) => {
@@ -74,13 +68,14 @@ export default function FileConverter() {
         fileChangeAction={fileChangeAction}
         fileInputRef={fileInputRef}
         size={{ width: '100%', height: '150px' }}
+        openSelectWindow={openFileSelectWindow}
       />
       {file && (
         <div className="flex flex-col gap-12">
           <div className="flex justify-between border-2 p-4">
             <span>{file.name}</span>
             <span>{formatFileSize(file.size)}</span>
-            <button onClick={deleteFile} className=" hover:text-blue-300">
+            <button onClick={deleteAction} className=" hover:text-blue-300">
               X
             </button>
           </div>
