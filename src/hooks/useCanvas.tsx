@@ -1,5 +1,6 @@
 import SaveModal from '@/components/editor/save-modal'
 import { useModalContext } from '@/context/modal-context'
+import { checkNameValidation } from '@/lib/file-utils'
 import { SetStateAction, useRef } from 'react'
 
 interface IDrawImageArgs {
@@ -42,13 +43,14 @@ const useCanvas = () => {
 
   const saveImg = ({ fileName, format }: { fileName: string; format: string }) => {
     if (!downloadRef.current || !canvasRef.current) return
-    if (!fileName) return alert('파일명을 입력해주세요.')
+    const isValid = checkNameValidation(fileName)
+    if (!isValid) return
 
     const canvas = canvasRef.current
     const dataURL = canvas.toDataURL(`image/${format}`)
     downloadRef.current.href = dataURL
-    downloadRef.current.download = `${fileName}.${format}` // 다운로드 시 파일이름 설정
-    downloadRef.current.click() //다운로드 링크 클릭이벤트 발생
+    downloadRef.current.download = `${fileName}.${format}`
+    downloadRef.current.click()
 
     closeModal()
   }
