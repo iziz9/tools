@@ -1,3 +1,5 @@
+import SaveModal from '@/components/editor/save-modal'
+import { useModalContext } from '@/context/modal-context'
 import { SetStateAction, useRef } from 'react'
 
 interface IDrawImageArgs {
@@ -8,6 +10,7 @@ interface IDrawImageArgs {
 const useCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
+  const { openModal, closeModal } = useModalContext()
 
   const drawImage = ({ file, setOriginalImg }: IDrawImageArgs) => {
     if (!file) return
@@ -37,21 +40,27 @@ const useCanvas = () => {
     }
   }
 
-  const saveImg = () => {
+  const saveImg = ({ fileName, format }: { fileName: string; format: string }) => {
     if (!downloadRef.current || !canvasRef.current) return
-
-    const fileName = prompt('저장할 파일명을 입력해주세요.') //모달로 변경하기, 파일 형식 선택창 추가
-    if (!fileName) return
+    if (!fileName) return alert('파일명을 입력해주세요.')
 
     const canvas = canvasRef.current
-    const dataURL = canvas.toDataURL(`image/${'png'}`)
-
+    const dataURL = canvas.toDataURL(`image/${format}`)
     downloadRef.current.href = dataURL
-    downloadRef.current.download = `${fileName}.png` // 다운로드 시 파일이름 설정
+    downloadRef.current.download = `${fileName}.${format}` // 다운로드 시 파일이름 설정
     downloadRef.current.click() //다운로드 링크 클릭이벤트 발생
+
+    closeModal()
   }
 
-  return { canvasRef, downloadRef, drawImage, saveImg }
+  const openSaveModal = () => {
+    openModal({
+      title: '이미지 저장',
+      content: <SaveModal saveImg={saveImg} />,
+    })
+  }
+
+  return { canvasRef, downloadRef, drawImage, openSaveModal }
 }
 
 export default useCanvas

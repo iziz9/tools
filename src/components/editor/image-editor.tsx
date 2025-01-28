@@ -8,7 +8,7 @@ import useFileUpload from '@/hooks/useFileUpload'
 import useCanvas from '@/hooks/useCanvas'
 
 export default function ImageEditor() {
-  const { canvasRef, downloadRef, drawImage, saveImg } = useCanvas()
+  const { canvasRef, downloadRef, drawImage, openSaveModal } = useCanvas()
   const { file, fileInputRef, changeFile, openFileSelectWindow, deleteFile } = useFileUpload()
   const { cropLayerRef, onCropMode, setOnCropMode, saveChanges, cancelChanges, setOriginalImg, returnToOriginal } =
     useImageCrop(canvasRef)
@@ -69,7 +69,7 @@ export default function ImageEditor() {
               >
                 <CropIcon />
               </button>
-              <button onClick={saveImg}>
+              <button onClick={openSaveModal}>
                 <SaveIcon />
               </button>
               <a href="" ref={downloadRef} className="hidden"></a>
