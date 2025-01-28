@@ -31,7 +31,10 @@ const useCanvas = () => {
       // 이미지가 성공적으로 로드되면
       canvas.width = img.width
       canvas.height = img.height
-      const ctx = canvas.getContext('2d')
+      const ctx = canvas.getContext('2d', {
+        willReadFrequently: true,
+        alpha: true,
+      })
       ctx?.drawImage(img, 0, 0, img.width, img.height) // 업로드한 이미지를 캔버스에 그리기(이미지객체, x좌표, y좌표)
       URL.revokeObjectURL(imgUrl) // 캐싱된 이미지 URL 해제(메모리관리, 같은 url 중복 생성 및 다운로드 중복 방지)
     }
@@ -47,7 +50,7 @@ const useCanvas = () => {
     if (!isValid) return
 
     const canvas = canvasRef.current
-    const dataURL = canvas.toDataURL(`image/${format}`)
+    const dataURL = canvas.toDataURL(`image/${format}`, 1.0)
     downloadRef.current.href = dataURL
     downloadRef.current.download = `${fileName}.${format}`
     downloadRef.current.click()
