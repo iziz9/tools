@@ -1,11 +1,26 @@
 'use client'
+import useCanvas from '@/hooks/useCanvas'
+import useFileUpload from '@/hooks/useFileUpload'
 import styles from '@/styles/main.module.css'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function Card() {
   const frameRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const lightRef = useRef<HTMLDivElement>(null)
+  const { canvasRef, drawImage } = useCanvas()
+  const { file, fileInputRef, changeFile, openFileSelectWindow } = useFileUpload()
+
+  useEffect(() => {
+    if (!file) return
+
+    const ratio = {
+      canvasWidth: 300,
+      canvasHeight: 400,
+    }
+    drawImage({ file, ratio })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file])
 
   const mouseMove = (e: MouseEvent) => {
     if (!frameRef.current || !cardRef.current || !lightRef.current) return
@@ -36,41 +51,17 @@ export default function Card() {
   }
 
   return (
-    <main className="py-12 w-full h-full">
-      <p className="text-center pb-10 text-3xl font-bold">Hi! Welcome.</p>
-      <div className="flex align-middle gap-28 w-full h-full">
-        <section className="flex flex-col gap-8 items-center">
-          <div
-            ref={frameRef}
-            className={styles.frame}
-            onMouseEnter={addMouseMoveEvent}
-            onMouseLeave={deleteMouseMoveEvent}
-          >
-            <a href="https://github.com/iziz9" target="blank">
-              <div ref={cardRef} className={styles.card}>
-                <div ref={lightRef} className={styles.light}></div>
-              </div>
-            </a>
+    <section className="flex flex-col gap-8 items-center">
+      <div ref={frameRef} className={styles.frame} onMouseEnter={addMouseMoveEvent} onMouseLeave={deleteMouseMoveEvent}>
+        <label htmlFor="file" onClick={() => openFileSelectWindow()} className="cursor-pointer">
+          <div ref={cardRef} className={styles.card} style={!file ? { backgroundImage: 'url("/card.webp")' } : {}}>
+            {file && <canvas ref={canvasRef} className={styles.card}></canvas>}
+            <div ref={lightRef} className={styles.light}></div>
           </div>
-          <div className="text-gray-400">Enter your mouse!</div>
-        </section>
-        <section className="flex items-center">
-          <span>
-            Lorem ipsum odor amet, consectetuer adipiscing elit. Nisl nisl sociosqu sed nullam non sociosqu potenti enim
-            odio. Auctor donec efficitur cursus ridiculus lectus. At integer dui vivamus nibh inceptos primis lectus
-            habitant. Nisi imperdiet nunc fames facilisi euismod dui adipiscing. Cubilia sem hac cras gravida aliquet
-            lacus amet non. Non blandit pellentesque dictumst laoreet blandit. Euismod mattis proin viverra ridiculus
-            sociosqu felis nec arcu. Suscipit per imperdiet ullamcorper curabitur primis blandit. Pellentesque senectus
-            semper efficitur turpis gravida. Sit risus magna maecenas habitasse litora tincidunt ligula! Porta magnis
-            sapien magnis hendrerit taciti ligula; magna nostra accumsan. Efficitur dapibus convallis luctus risus
-            senectus iaculis. Ornare elementum curae netus facilisi senectus. Varius ullamcorper sed est ut torquent
-            massa ad montes. Auctor sit ridiculus class fermentum a eleifend erat. Finibus nostra lobortis phasellus
-            ultricies commodo imperdiet. Duis suspendisse tortor imperdiet dapibus ad facilisis non gravida. Metus
-            sollicitudin porta mus quisque nibh vulputate tincidunt. Elit gravida dignissim blandit felis consectetur
-            nisi nullam risus potenti.
-          </span>
-        </section>
+        </label>
+        <input type="file" name="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={changeFile} />
       </div>
-    </main>
+      <div className="text-gray-400">Enter your mouse!</div>
+    </section>
   )
 }
