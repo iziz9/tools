@@ -1,15 +1,23 @@
+import SaveModal from '@/components/editor/save-modal'
+import { useModalContext } from '@/context/modal-context'
+import { checkNameValidation } from '@/lib/file-utils'
 import { SetStateAction, useRef } from 'react'
 
 interface IDrawImageArgs {
   file: File
   setOriginalImg?: (value: SetStateAction<HTMLImageElement | undefined>) => void
+  ratio?: {
+    canvasWidth: number
+    canvasHeight: number
+  }
 }
 
 const useCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const downloadRef = useRef<HTMLAnchorElement>(null)
+  const { openModal, closeModal } = useModalContext()
 
-  const drawImage = ({ file, setOriginalImg }: IDrawImageArgs) => {
+  const drawImage = ({ file, setOriginalImg, ratio }: IDrawImageArgs) => {
     if (!file) return
 
     const img = new Image() // 동적으로 이미지 생성
@@ -25,10 +33,40 @@ const useCanvas = () => {
 
     img.onload = () => {
       // 이미지가 성공적으로 로드되면
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      ctx?.drawImage(img, 0, 0, img.width, img.height) // 업로드한 이미지를 캔버스에 그리기(이미지객체, x좌표, y좌표)
+      const ctx = canvas.getContext('2d', {
+        willReadFrequently: true,
+        alpha: true,
+      })
+
+      let drawWidth = img.width
+      let drawHeight = img.height
+      let offsetX = 0
+      let offsetY = 0
+
+      if (ratio) {
+        const { canvasWidth, canvasHeight } = ratio
+
+        const canvasRatio = canvasWidth / canvasHeight
+        const imgRatio = img.width / img.height
+
+        canvas.width = canvasWidth
+        canvas.height = canvasHeight
+
+        if (imgRatio < canvasRatio) {
+          drawWidth = canvasWidth
+          drawHeight = drawWidth / imgRatio
+          offsetY = (canvasHeight - drawHeight) / 2
+        } else {
+          drawHeight = canvasHeight
+          drawWidth = drawHeight * imgRatio
+          offsetX = (canvasWidth - drawWidth) / 2
+        }
+      } else {
+        canvas.width = img.width
+        canvas.height = img.height
+      }
+
+      ctx?.drawImage(img, offsetX, offsetY, drawWidth, drawHeight) // 업로드한 이미지를 캔버스에 그리기(이미지객체, x좌표, y좌표)
       URL.revokeObjectURL(imgUrl) // 캐싱된 이미지 URL 해제(메모리관리, 같은 url 중복 생성 및 다운로드 중복 방지)
     }
     img.onerror = () => {
@@ -37,21 +75,28 @@ const useCanvas = () => {
     }
   }
 
-  const saveImg = () => {
+  const saveImg = ({ fileName, format }: { fileName: string; format: string }) => {
     if (!downloadRef.current || !canvasRef.current) return
-
-    const fileName = prompt('저장할 파일명을 입력해주세요.') //모달로 변경하기, 파일 형식 선택창 추가
-    if (!fileName) return
+    const isValid = checkNameValidation(fileName)
+    if (!isValid) return
 
     const canvas = canvasRef.current
-    const dataURL = canvas.toDataURL(`image/${'png'}`)
-
+    const dataURL = canvas.toDataURL(`image/${format}`, 1.0)
     downloadRef.current.href = dataURL
-    downloadRef.current.download = `${fileName}.png` // 다운로드 시 파일이름 설정
-    downloadRef.current.click() //다운로드 링크 클릭이벤트 발생
+    downloadRef.current.download = `${fileName}.${format}`
+    downloadRef.current.click()
+
+    closeModal()
   }
 
-  return { canvasRef, downloadRef, drawImage, saveImg }
+  const openSaveModal = () => {
+    openModal({
+      title: '이미지 저장',
+      content: <SaveModal saveImg={saveImg} />,
+    })
+  }
+
+  return { canvasRef, downloadRef, drawImage, openSaveModal }
 }
 
 export default useCanvas

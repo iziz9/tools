@@ -8,14 +8,8 @@ import { useEffect, useState } from 'react'
 export default function ShadeModal({ hexCode, textColor }: { hexCode: string; textColor: string }) {
   const { modal } = useModalContext()
   const [schemes, setSchemes] = useState<IColorSchemes>()
-  // const isInitialRender = useRef(true)
 
   useEffect(() => {
-    // if (isInitialRender.current) {
-    //   isInitialRender.current = false
-    //   return
-    // }
-
     const requestGetColorSchemes = async () => {
       const res = await getColorSchemes(hexCode)
       console.log(res)
@@ -27,7 +21,7 @@ export default function ShadeModal({ hexCode, textColor }: { hexCode: string; te
   if (!modal.isOpen) return null
 
   return (
-    <div className="relative p-10">
+    <div className="relative p-10 w-[400px] h-[560px]">
       {schemes ? (
         <div className="flex relative h-full">
           <div
@@ -50,7 +44,7 @@ export default function ShadeModal({ hexCode, textColor }: { hexCode: string; te
           </div>
         </div>
       ) : (
-        <div className="relative my-52 text-2xl font-bold text-overlay">loading...</div>
+        <div className="relative text-center my-52 text-2xl font-bold text-overlay">loading...</div>
       )}
     </div>
   )

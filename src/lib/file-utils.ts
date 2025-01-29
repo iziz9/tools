@@ -23,3 +23,14 @@ export const imgUrlToBlob = (dataURL: string) => {
   const fileblob = new Blob([ab], { type: mimeString })
   return fileblob
 }
+
+export const checkNameValidation = (fileName: string) => {
+  const invalidChars = /[\\/:*?"<>|]/
+  if (!fileName || fileName.replaceAll('.', '') === '') return alert('파일명을 입력해주세요.')
+
+  if (invalidChars.test(fileName)) {
+    alert('파일명에 다음 특수문자를 포함할 수 없습니다: \\ / : * ? " < > |')
+    return false
+  }
+  return true
+}
